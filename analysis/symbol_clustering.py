@@ -19,17 +19,10 @@ def cluster_symbols(
 ):
     # 加载 latent
     h = np.load(latent_path)  # shape (T, latent_dim)
-    T = h.shape[0]
-
-    # 加入时间特征（归一化）
-    t = np.linspace(0, 1, T).reshape(-1, 1)
-
-    # 拼接 latent + 时间
-    h_aug = np.concatenate([h, t], axis=1)
 
     # 聚类
     kmeans = KMeans(n_clusters=n_clusters, n_init=20, random_state=0)
-    labels = kmeans.fit_predict(h_aug)
+    labels = kmeans.fit_predict(h)
 
     np.save(save_clusters, labels)
     print(f"Saved {save_clusters}, shape = {labels.shape}")
@@ -40,7 +33,7 @@ def cluster_symbols(
 
     plt.figure(figsize=(6, 6))
     plt.scatter(h2[:, 0], h2[:, 1], c=labels, cmap="tab10", s=8)
-    plt.title("Enhanced Symbol Clusters (latent + time)")
+    plt.title("Symbol Clusters in Latent Space")
     plt.xlabel("PC1")
     plt.ylabel("PC2")
     plt.grid(True)
