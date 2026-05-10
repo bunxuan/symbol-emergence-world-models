@@ -40,34 +40,37 @@ def build_state_machine(
             if T[i, j] > 0:
                 G.add_edge(i, j, weight=T[i, j])
 
-    # 更清晰的布局：固定成圆形，减少节点和边的挤压
-    pos = nx.circular_layout(G, scale=2.2)
+    # 更适合展示的布局：4 个状态时固定成菱形；否则退回到圆形
+    if n_states == 4:
+        pos = {
+            0: (1.75, 0.0),
+            1: (0.0, 1.75),
+            2: (-1.75, 0.0),
+            3: (0.0, -1.75),
+        }
+    else:
+        pos = nx.circular_layout(G, scale=2.2)
 
-    plt.figure(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(10.4, 8.2))
+    fig.patch.set_facecolor("white")
+    ax.set_facecolor("white")
+    fig.subplots_adjust(left=0.05, right=0.74, top=0.92, bottom=0.08)
 
     # 节点
-    nx.draw_networkx_nodes(G, pos, node_size=1300, node_color="lightblue")
+    nx.draw_networkx_nodes(
+        G,
+        pos,
+        node_size=1450,
+        node_color="#b9dff0",
+        edgecolors="#6b8796",
+        linewidths=1.0,
+        ax=ax,
+    )
 
     # 标签
-    nx.draw_networkx_labels(G, pos, font_size=14)
+    nx.draw_networkx_labels(G, pos, font_size=14, font_weight="semibold", ax=ax)
 
-    # 边（根据权重调整粗细，但做上限，避免自环过粗）
-    edge_rads = {
-        (0, 1): 0.18,
-        (1, 0): -0.18,
-        (1, 2): 0.18,
-        (2, 1): -0.18,
-        (2, 3): 0.18,
-        (3, 2): -0.18,
-        (3, 0): 0.18,
-        (0, 3): -0.18,
-        (0, 2): 0.34,
-        (2, 0): -0.34,
-        (1, 3): 0.34,
-        (3, 1): -0.34,
-    }
-
-    def draw_edge(edge, rad, width):
+    def draw_edge(edge, rad, width, color, alpha=1.0):
         nx.draw_networkx_edges(
             G,
             pos,
@@ -78,49 +81,50 @@ def build_state_machine(
             connectionstyle=f"arc3,rad={rad}",
             min_source_margin=12,
             min_target_margin=12,
+            edge_color=color,
+            alpha=alpha,
+            ax=ax,
         )
 
-    # 先画非自环边，再单独画自环
-    edge_labels = {}
+    cross_style = {
+        frozenset((1, 2)): (0.48, "#2b6cb0"),
+        frozenset((1, 3)): (0.64, "#c05621"),
+        frozenset((0, 3)): (0.52, "#2f855a"),
+    }
+
+    cross_edges = []
     for u, v in G.edges():
         weight = G[u][v]["weight"]
-        width = min(1.3 + weight * 0.06, 2.8)
         if u == v:
-            loop_rad = 0.25 + 0.05 * u
-            draw_edge((u, v), loop_rad, width)
+            loop_rad = 0.20 + 0.04 * u
+            width = min(0.9 + weight * 0.004, 1.8)
+            draw_edge((u, v), loop_rad, width, "#94a3b8", alpha=0.45)
         else:
-            draw_edge((u, v), edge_rads.get((u, v), 0.16 if u < v else -0.16), width)
-            edge_labels[(u, v)] = weight
+            base_rad, color = cross_style.get(frozenset((u, v)), (0.34, "#4a5568"))
+            rad = base_rad if u < v else -base_rad
+            width = min(1.15 + weight * 0.04, 2.4)
+            draw_edge((u, v), rad, width, color, alpha=0.95)
+            cross_edges.append((u, v, weight))
 
-    # 非自环边标签
-    nx.draw_networkx_edge_labels(
-        G,
-        pos,
-        edge_labels=edge_labels,
-        font_size=11,
-        label_pos=0.58,
-        rotate=False,
-        bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.85),
+    summary_lines = ["Cross-state transition counts"]
+    for u, v, weight in sorted(cross_edges, key=lambda item: (-item[2], item[0], item[1])):
+        summary_lines.append(f"{u} -> {v}: {weight}")
+    summary_lines.append("Self-loops are shown as faint gray arcs")
+
+    fig.text(
+        0.77,
+        0.50,
+        "\n".join(summary_lines),
+        ha="left",
+        va="center",
+        fontsize=9,
+        linespacing=1.35,
+        bbox=dict(boxstyle="round,pad=0.45", fc="#f8fafc", ec="#cbd5e1", alpha=0.98),
     )
 
-    # 自环标签单独放，避免压在节点和环上
-    for node in G.nodes():
-        if T[node, node] > 0:
-            x, y = pos[node]
-            plt.text(
-                x,
-                y + 0.38,
-                str(T[node, node]),
-                ha="center",
-                va="center",
-                fontsize=11,
-                bbox=dict(boxstyle="round,pad=0.15", fc="white", ec="none", alpha=0.85),
-            )
-
-    plt.title("Enhanced Symbolic State Machine")
-    plt.axis("off")
-    plt.tight_layout()
-    plt.savefig(save_fig, dpi=300)
+    ax.set_title("Symbolic State Machine", pad=14, fontsize=14)
+    ax.axis("off")
+    fig.savefig(save_fig, dpi=300)
     print(f"Saved {save_fig}")
 
 
