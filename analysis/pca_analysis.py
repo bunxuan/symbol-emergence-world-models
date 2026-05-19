@@ -11,7 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def plot_pca(
     latent_path=PROJECT_ROOT / "model" / "latent.npy",
-    save_path=PROJECT_ROOT / "results" / "pca_plot.png",
+    save_path=PROJECT_ROOT / "analysis" / "plots" / "latent_pca.png",
 ):
     # 加载 latent
     h = np.load(latent_path)  # shape (T, latent_dim)

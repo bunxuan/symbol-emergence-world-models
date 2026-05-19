@@ -8,7 +8,7 @@ from sklearn.cluster import KMeans
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 LATENT_PATH = PROJECT_ROOT / "model" / "latent.npy"
 SAVE_CLUSTERS = PROJECT_ROOT / "analysis" / "clusters.npy"
-SAVE_FIG = PROJECT_ROOT / "results" / "symbol_clusters.png"
+SAVE_FIG = PROJECT_ROOT / "analysis" / "plots" / "symbol_clusters.png"
 
 
 def cluster_symbols(

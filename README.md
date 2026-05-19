@@ -1,88 +1,130 @@
 # Symbol Emergence in a 1D World Model
 
-A compact investigation of how discrete symbolic regimes emerge from continuous latent dynamics.
+<p align="center">
+  <img src="report/figures/fig1_pipeline.png" width="720">
+</p>
 
-This repository presents a preliminary investigation of symbol emergence in a learned world model using a 1D bouncing‑ball environment.
-The goal is to examine whether continuous trajectories can be compressed into latent representations that support discrete symbolic states and state transitions.
+This repository explores **how discrete symbolic structure can emerge from continuous predictive dynamics** in a simple 1D bouncing-ball environment.  
+The project investigates the mechanisms by which **latent discontinuities, Jacobian changes, and transition structure** give rise to symbolic boundaries.
 
-## Research Motivation
+The experiments combine:
+- A compact **world model** (encoder–transition–decoder)
+- A **flow model** (RealNVP) on latent space
+- A **diffusion model** (denoising latent dynamics)
+- A full analysis pipeline for **latent geometry**, **Jacobian structure**, **symbol clustering**, and **state-transition graphs**
 
-Understanding how symbolic structure arises from continuous sensory dynamics is a central question in Symbol Emergence and Cognitive Systems.
-This minimal 1D setup provides a controlled environment to study how latent representations develop piecewise-linear structure, transition boundaries, and symbol-like regimes.
-The same methodology will later be extended to 2D physics, GridWorld agents, and multimodal environments.
+The goal is to provide a minimal but mechanistic demonstration of **individual symbol emergence**, forming a foundation for future work on **social symbol emergence**.
 
-## Results Overview
+---
 
-The following figures illustrate how discrete symbolic regimes emerge from continuous latent dynamics, revealing the transition from continuous representation to symbolic abstraction.
-<table>
-<tr>
-<td colspan="2" align="center">
-<img src="results/state_machine.png" alt="Symbolic State Machine" width="900">
-<br>
-<strong>Symbolic State Machine</strong><br>
-Emergent symbolic states and their cross-state transition counts.
-</td>
-</tr>
-<tr>
-<td align="center" width="50%">
-<img src="results/jacobian_heatmap.png" alt="Jacobian Heatmap" width="100%">
-<br>
-<strong>Jacobian Heatmap</strong><br>
-Encoder sensitivity and transition boundaries in latent space.
-</td>
-<td align="center" width="50%">
-<img src="results/symbol_clusters.png" alt="Symbol Clusters" width="100%">
-<br>
-<strong>Symbol Clusters</strong><br>
-Latent-only clustering of emergent symbolic states.
-</td>
-</tr>
-</table>
+## 1. Overview
 
-## Pipeline
+This project studies the hypothesis:
 
-1. Generate a 1D bouncing trajectory.
-2. Train a compact world model to predict the next position.
-3. Analyze the latent trajectory with PCA.
-4. Compute the encoder Jacobian.
-5. Cluster latent states.
-6. Build a symbolic state-transition graph.
+> **Symbolic boundaries arise when predictive dynamics undergo structural changes.**
 
-This pipeline demonstrates how symbolic abstraction can be systematically derived from continuous world-model dynamics.
+Using a 1D environment with deterministic physics, we show that:
+- Latent trajectories become **piecewise-linear**
+- Encoder Jacobian exhibits **sharp discontinuities** at wall-bounce events
+- These discontinuities align with **emergent symbolic states**
+- Flow and diffusion models reveal **consistent symbolic geometry**
+- A discrete **symbolic state machine** emerges from continuous dynamics
 
-Additional manifold comparison plots are saved in `results/flow_vs_latent.png` and `results/diffusion_vs_real.png`.
+---
 
-## How to Run
+## 2. Repository Structure
 
-```bash
-bash scripts/all.sh
+```text
+symbol-emergence-world-models/
+│
+├── model/                # World model, flow, diffusion
+├── analysis/             # PCA, Jacobian, clustering, state machine
+│   └── plots/            # Generated figures
+├── results/              # Latent, samples, model weights
+├── report/               # mini_report + final figures
+└── README.md
 ```
 
-Or run a single stage directly:
+---
 
-```bash
-python run.py world
-python run.py flow
-python run.py diffusion
-python run.py all
-```
+## 3. Key Results
 
-## Project Summary
+### **Latent PCA**
+<p align="center">
+  <img src="report/figures/fig2_latent_pca.png" width="480">
+</p>
 
-continuous dynamics -> latent encoding -> discrete symbolic states -> transition system
+Latent trajectories form **segmented linear regions**, suggesting discrete regimes.
 
-This project is intended as a compact research prototype for Symbol Emergence and Cognitive Systems, with planned extensions to higher-dimensional environments and more complex symbolic structure.
+---
 
-flowchart LR
-    A[generate_data\n1D trajectory] --> B[train world\nWorldModel]
-    B --> C[(latent.npy)]
-    C --> D[flow\nRealNVP on latent]
-    C --> E[diffusion\nDenoise latent]
-    C --> F[analysis\nPCA / Jacobian / Clustering / State Machine]
-    D --> G[flow_vs_latent.png\nflow fit plot]
-    E --> H[diffusion_vs_real.png\ndiffusion reverse chain]
-    F --> I[results\njacobian_heatmap.png\nsymbol_clusters.png\nstate_machine.png]
-    A --> J[data/trajectories.npy]
-    B --> K[model/world_model.pth]
-    D --> L[model/flow.pth\nflow_samples.npy]
-    E --> M[model/diffusion.pth\ndiffusion_samples.npy\ndiffusion_chain.npy]
+### **Jacobian Discontinuity**
+<p align="center">
+  <img src="report/figures/fig3_jacobian.png" width="480">
+</p>
+
+Encoder Jacobian shows **sharp structural changes** at bounce events —  
+a mechanistic origin of symbolic boundaries.
+
+---
+
+### **Symbol Clusters & State Machine**
+<p align="center">
+  <img src="report/figures/fig4_symbol_clusters.png" width="420">
+  <img src="report/figures/fig5_state_machine.png" width="420">
+</p>
+
+Discrete symbolic states emerge naturally, forming a **predictive state-transition graph**.
+
+---
+
+### **Flow & Diffusion Dynamics**
+<p align="center">
+  <img src="report/figures/fig6_flow_geometry.png" width="420">
+  <img src="report/figures/fig7_diffusion_dynamics.png" width="420">
+</p>
+
+Both reversible (flow) and generative (diffusion) models preserve the same symbolic boundaries,  
+indicating **model-independent symbolic structure**.
+
+---
+
+## 4. Methods
+
+- **Environment:** 1D bouncing ball with deterministic physics  
+- **World Model:** encoder → transition → decoder  
+- **Flow Model:** RealNVP on latent space  
+- **Diffusion Model:** denoising latent dynamics  
+- **Analysis:** PCA, Jacobian, clustering, symbolic transition graph
+
+All code is modular and reproducible.
+
+---
+
+## 5. Toward Social Symbol Emergence
+
+This project focuses on **individual symbol emergence** —  
+how a single agent’s predictive dynamics produce symbolic boundaries.
+
+In future work, this framework can extend to **multi-agent systems**, where:
+- Agents share or negotiate symbolic categories  
+- Communication induces alignment  
+- Symbol systems emerge at the **societal level**
+
+This connects directly to ongoing research in **Symbol Emergence Systems**.
+
+---
+
+## 6. Citation
+
+A preprint is in preparation.  
+If you find this project useful, please cite or star the repository.
+
+---
+
+## 7. Contact
+
+**Xu Wenxuan**  
+Ningbo University of Technology  
+GitHub: https://github.com/bunxuan  
+Email: jyosa@nbut.edu.cn

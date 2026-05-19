@@ -17,21 +17,21 @@ def run_script(script_path: Path, *args: str) -> None:
 
 def run_world_pipeline() -> None:
     run_script(PROJECT_ROOT / "data" / "generate_data.py")
-    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "world")
-    run_script(PROJECT_ROOT / "analysis" / "pca_analysis.py")
+    run_script(PROJECT_ROOT / "model" / "train_world.py")
+    run_script(PROJECT_ROOT / "analysis" / "latent_pca.py")
     run_script(PROJECT_ROOT / "analysis" / "jacobian_analysis.py")
-    run_script(PROJECT_ROOT / "analysis" / "symbol_clustering.py")
+    run_script(PROJECT_ROOT / "analysis" / "clustering.py")
     run_script(PROJECT_ROOT / "analysis" / "state_machine.py")
 
 
 def run_flow_pipeline() -> None:
-    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "flow")
-    run_script(PROJECT_ROOT / "analysis" / "manifold_plot.py", "--mode", "flow")
+    run_script(PROJECT_ROOT / "model" / "train_flow.py")
+    run_script(PROJECT_ROOT / "analysis" / "flow_geometry.py")
 
 
 def run_diffusion_pipeline() -> None:
-    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "diffusion")
-    run_script(PROJECT_ROOT / "analysis" / "manifold_plot.py", "--mode", "diffusion")
+    run_script(PROJECT_ROOT / "model" / "train_diffusion.py")
+    run_script(PROJECT_ROOT / "analysis" / "diffusion_dynamics.py")
 
 
 def main() -> None:

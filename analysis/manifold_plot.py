@@ -44,7 +44,7 @@ def plot_flow_comparison(
     latent_path=LATENT_PATH,
     flow_path=FLOW_MODEL_PATH,
     sample_path=FLOW_SAMPLES_PATH,
-    save_path=RESULTS_DIR / "flow_vs_latent.png",
+    save_path=ROOT / "analysis" / "plots" / "flow_vs_latent.png",
 ):
     latent = _load_latent(latent_path)
     latent_dim = latent.shape[1]
@@ -94,7 +94,7 @@ def plot_diffusion_comparison(
     latent_path=LATENT_PATH,
     diffusion_path=DIFFUSION_MODEL_PATH,
     chain_path=DIFFUSION_CHAIN_PATH,
-    save_path=RESULTS_DIR / "diffusion_vs_real.png",
+    save_path=ROOT / "analysis" / "plots" / "diffusion_vs_real.png",
 ):
     latent = _load_latent(latent_path)
     latent_dim = latent.shape[1]

@@ -14,7 +14,7 @@ from world_model import WorldModel
 MODEL_PATH = ROOT / "model" / "world_model.pth"
 TRAJ_PATH = ROOT / "data" / "trajectories.npy"
 SAVE_JACOBIAN = ROOT / "analysis" / "jacobian.npy"
-SAVE_FIG = ROOT / "results" / "jacobian_heatmap.png"
+SAVE_FIG = ROOT / "analysis" / "plots" / "jacobian_heatmap.png"
 
 
 def compute_jacobian(

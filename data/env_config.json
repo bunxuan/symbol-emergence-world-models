@@ -1,0 +1,7 @@
+{
+     "trajectory_length": 1000,
+     "step_size": 0.03,
+     "x0": 0.5,
+     "xmin": 0.0,
+     "xmax": 1.0
+}

@@ -7,7 +7,7 @@ import networkx as nx
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CLUSTER_PATH = PROJECT_ROOT / "analysis" / "clusters.npy"
 SAVE_TRANSITIONS = PROJECT_ROOT / "analysis" / "state_transitions.npy"
-SAVE_FIG = PROJECT_ROOT / "results" / "state_machine.png"
+SAVE_FIG = PROJECT_ROOT / "analysis" / "plots" / "state_machine.png"
 
 
 def build_state_machine(
@@ -107,7 +107,9 @@ def build_state_machine(
             cross_edges.append((u, v, weight))
 
     summary_lines = ["Cross-state transition counts"]
-    for u, v, weight in sorted(cross_edges, key=lambda item: (-item[2], item[0], item[1])):
+    for u, v, weight in sorted(
+        cross_edges, key=lambda item: (-item[2], item[0], item[1])
+    ):
         summary_lines.append(f"{u} -> {v}: {weight}")
     summary_lines.append("Self-loops are shown as faint gray arcs")
 

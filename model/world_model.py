@@ -30,7 +30,6 @@ class WorldModel(nn.Module):
             nn.Linear(1, 32),
             nn.ReLU(),
             nn.Linear(32, latent_dim),
-            nn.ReLU(),
         )
 
         self.decoder = nn.Sequential(
@@ -142,7 +141,7 @@ class FlowModule(nn.Module):
 
     def sample(self, num_samples, device=None):
         return self.flow.sample(num_samples, device=device)
-    
+
 
 class EpsilonPredictor(nn.Module):
     def __init__(self, dim, timesteps, hidden_dim=128, time_embed_dim=64):
