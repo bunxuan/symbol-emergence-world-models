@@ -1,6 +1,7 @@
 """One-command pipeline for the symbol emergence project."""
 
 from pathlib import Path
+import argparse
 import subprocess
 import sys
 
@@ -8,16 +9,52 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 PYTHON = sys.executable
 
 
-def run_script(script_path: Path) -> None:
-    result = subprocess.run([PYTHON, str(script_path)], cwd=PROJECT_ROOT)
+def run_script(script_path: Path, *args: str) -> None:
+    result = subprocess.run([PYTHON, str(script_path), *args], cwd=PROJECT_ROOT)
     if result.returncode != 0:
         raise SystemExit(result.returncode)
 
 
-def main() -> None:
+def run_world_pipeline() -> None:
     run_script(PROJECT_ROOT / "data" / "generate_data.py")
-    run_script(PROJECT_ROOT / "model" / "train.py")
+    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "world")
     run_script(PROJECT_ROOT / "analysis" / "pca_analysis.py")
+    run_script(PROJECT_ROOT / "analysis" / "jacobian_analysis.py")
+    run_script(PROJECT_ROOT / "analysis" / "symbol_clustering.py")
+    run_script(PROJECT_ROOT / "analysis" / "state_machine.py")
+
+
+def run_flow_pipeline() -> None:
+    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "flow")
+    run_script(PROJECT_ROOT / "analysis" / "manifold_plot.py", "--mode", "flow")
+
+
+def run_diffusion_pipeline() -> None:
+    run_script(PROJECT_ROOT / "model" / "train.py", "--mode", "diffusion")
+    run_script(PROJECT_ROOT / "analysis" / "manifold_plot.py", "--mode", "diffusion")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run the symbol emergence pipeline.")
+    parser.add_argument(
+        "mode",
+        nargs="?",
+        default="world",
+        choices=["world", "flow", "diffusion", "all"],
+    )
+    args = parser.parse_args()
+
+    if args.mode == "world":
+        run_world_pipeline()
+    elif args.mode == "flow":
+        run_flow_pipeline()
+    elif args.mode == "diffusion":
+        run_diffusion_pipeline()
+    else:
+        run_world_pipeline()
+        run_flow_pipeline()
+        run_diffusion_pipeline()
+
     print("Pipeline finished.")
 
 

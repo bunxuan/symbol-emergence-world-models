@@ -49,10 +49,22 @@ Latent-only clustering of emergent symbolic states.
 6. Build a symbolic state-transition graph.
 
 This pipeline demonstrates how symbolic abstraction can be systematically derived from continuous world-model dynamics.
+
+Additional manifold comparison plots are saved in `results/flow_vs_latent.png` and `results/diffusion_vs_real.png`.
+
 ## How to Run
 
 ```bash
 bash scripts/all.sh
+```
+
+Or run a single stage directly:
+
+```bash
+python run.py world
+python run.py flow
+python run.py diffusion
+python run.py all
 ```
 
 ## Project Summary
@@ -60,3 +72,17 @@ bash scripts/all.sh
 continuous dynamics -> latent encoding -> discrete symbolic states -> transition system
 
 This project is intended as a compact research prototype for Symbol Emergence and Cognitive Systems, with planned extensions to higher-dimensional environments and more complex symbolic structure.
+
+flowchart LR
+    A[generate_data\n1D trajectory] --> B[train world\nWorldModel]
+    B --> C[(latent.npy)]
+    C --> D[flow\nRealNVP on latent]
+    C --> E[diffusion\nDenoise latent]
+    C --> F[analysis\nPCA / Jacobian / Clustering / State Machine]
+    D --> G[flow_vs_latent.png\nflow fit plot]
+    E --> H[diffusion_vs_real.png\ndiffusion reverse chain]
+    F --> I[results\njacobian_heatmap.png\nsymbol_clusters.png\nstate_machine.png]
+    A --> J[data/trajectories.npy]
+    B --> K[model/world_model.pth]
+    D --> L[model/flow.pth\nflow_samples.npy]
+    E --> M[model/diffusion.pth\ndiffusion_samples.npy\ndiffusion_chain.npy]
