@@ -1,5 +1,31 @@
 # Symbol Emergence in a 1D World Model
 
+## Key Mechanistic Insights
+
+This project suggests that discrete symbolic structure can emerge from continuous predictive dynamics in a simple 1D environment.  
+The following observations summarize the main mechanisms we observe in the learned representations.
+
+- **Latent Manifold**  
+  PCA indicates that the latent representation lies on a smooth, low‑dimensional trajectory rather than forming a scattered cloud.  
+  The world model compresses continuous dynamics into a structured manifold.
+
+- **Jacobian Variations**  
+  The encoder is piecewise linear, so changes in ReLU activation patterns can produce jumps in the Jacobian.  
+  In this dataset, those changes appear to be associated with physical event boundaries and provide a plausible mechanism for symbolic segmentation.
+
+- **Symbol Clustering**  
+  K‑means on the latent trajectory discretizes the continuous manifold into phase‑like segments.  
+  Each segment can be interpreted as a distinct predictive regime, forming an emergent symbolic state.
+
+- **State Machine**  
+  The sequence of cluster assignments forms a discrete symbolic state sequence.  
+  Aggregating transitions yields a symbolic state machine that captures the environment’s predictive dynamics.
+
+- **Model Robustness (Flow & Diffusion)**  
+  Flow models largely preserve the segmentation because invertible maps do not create new boundaries on their own.  
+  Diffusion reverse chains reconstruct similar boundaries, suggesting that the symbolic structure is driven primarily by the environment rather than by a single model choice.
+
+
 <p align="center">
   <img src="report/figures/fig1_pipeline.png" width="720">
 </p>
@@ -99,9 +125,27 @@ indicating **model-independent symbolic structure**.
 
 All code is modular and reproducible.
 
+## 5. Run
+
+Windows:
+
+```bat
+run.bat
+run.bat all
+scripts\run_all.bat
+```
+
+Or run individual stages:
+
+```bat
+run.bat world
+run.bat flow
+run.bat diffusion
+```
+
 ---
 
-## 5. Toward Social Symbol Emergence
+## 6. Toward Social Symbol Emergence
 
 This project focuses on **individual symbol emergence** —  
 how a single agent’s predictive dynamics produce symbolic boundaries.
@@ -115,14 +159,14 @@ This connects directly to ongoing research in **Symbol Emergence Systems**.
 
 ---
 
-## 6. Citation
+## 7. Citation
 
 A preprint is in preparation.  
 If you find this project useful, please cite or star the repository.
 
 ---
 
-## 7. Contact
+## 8. Contact
 
 **Xu Wenxuan**  
 Ningbo University of Technology  
