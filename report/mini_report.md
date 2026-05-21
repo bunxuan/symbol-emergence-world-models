@@ -4,6 +4,10 @@ A preprint based on this repository is currently in preparation.
 _A mechanistic study of how discrete symbolic structure arises from continuous latent dynamics_
 
 ---
+## Draft Abstract
+Understanding how discrete symbolic structure can arise from continuous sensorimotor experience is a central challenge in cognitive science and machine learning. We study this question in a minimal 1D bouncing‑ball environment, where continuous motion is punctuated by discrete events. A predictive world model trained on this environment develops a latent trajectory that evolves along a smooth manifold segmented by sharp transitions. We hypothesize that these boundaries arise when the model must switch between distinct predictive regimes, and we show that encoder Jacobian discontinuities provide a mechanistic marker of these transitions.
+
+By combining latent geometry analysis, Jacobian inspection, and clustering, we extract symbolic states whose transitions form a compact state machine reflecting the environment’s dynamics. Importantly, similar segmentation patterns appear across MLPs, invertible flow models, and diffusion models, suggesting that the symbolic structure is driven by the environment’s predictive dynamics rather than architectural artifacts. This minimal setting reveals a core mechanism by which symbolic categories may emerge from prediction alone, and provides a foundation for extending symbol‑emergence studies to multi‑agent systems in which symbolic categories may be shared or negotiated.
 
 ## 1. Introduction
 
@@ -74,7 +78,7 @@ We analyze latent geometry using PCA, compute encoder Jacobians to detect struct
 
 ## 3. Results
 
-### Latent Geometry
+### 3.1 Latent Geometry (MLP)
 PCA suggests that latent trajectories form segmented linear regions. These segments appear to align with physical bounce events, suggesting the emergence of discrete regimes.
 
 <p align="center">
@@ -83,47 +87,60 @@ PCA suggests that latent trajectories form segmented linear regions. These segme
 
 (Figure 2: Latent PCA)
 
-### Jacobian Discontinuity
 The encoder Jacobian exhibits pronounced structural changes at bounce events. These discontinuities appear to correspond to symbolic boundaries in the latent space.
 
 <p align="center">
 	<img src="figures/fig3_jacobian.png" width="480">
 </p>
 
-(Figure 3: Encoder Jacobian)
+(Figure 3: Jacobian timeseries)
 
-### Symbolic Clusters
 Clustering the latent states yields a discrete set of symbolic categories. Each cluster can be associated with a distinct dynamical regime of the environment.
 
 <p align="center">
 	<img src="figures/fig4_symbol_clusters.png" width="420">
 </p>
 
-(Figure 4: Symbol Clusters)
+(Figure 4: Latent segmentation)
 
-### Symbolic State Machine
 From the clustered latent states, we construct a symbolic state-transition graph. The resulting structure summarizes the predictive dynamics of the environment in discrete form.
 
 <p align="center">
 	<img src="figures/fig5_state_machine.png" width="420">
 </p>
 
-(Figure 5: State Machine)
+(Figure 5: Symbolic state machine)
 
-### Flow and Diffusion Models
-Both the flow model and the diffusion model preserve a similar symbolic segmentation. This suggests that the observed boundaries are not specific to a single model choice but reflect structure in the predictive dynamics.
+### 3.2 Flow Model Analysis (Model Independence)
+We analyze the Flow model to examine whether similar latent segmentation appears under an invertible transformation.
+
+<table align="center">
+	<tr>
+		<td align="center"><img src="figures/fig6a_flow_latent_segmentation.png" width="260"><br>(Figure 6a: Flow latent segmentation)</td>
+		<td align="center"><img src="figures/fig6b_flow_jacobian_timeseries.png" width="260"><br>(Figure 6b: Flow Jacobian timeseries)</td>
+		<td align="center"><img src="figures/fig6c_latent_structure_comparison.png" width="260"><br>(Figure 6c: Latent structure comparison)</td>
+	</tr>
+</table>
+
+### 3.3 Diffusion Model Analysis (Model Independence)
+We analyze the diffusion reverse chain to examine whether the same symbolic structure appears in the generative setting.
+
+<table align="center">
+	<tr>
+		<td align="center"><img src="figures/fig7a_diffusion_reverse_chain.png" width="260"><br>(Figure 7a: diffusion reverse chain)</td>
+		<td align="center"><img src="figures/fig7b_diffusion_segmentation.png" width="260"><br>(Figure 7b: diffusion segmentation)</td>
+		<td align="center"><img src="figures/fig7c_diffusion_vs_real_latent_comparison.png" width="260"><br>(Figure 7c: diffusion vs real latent comparison)</td>
+	</tr>
+</table>
+
+### 3.4 Summary of Model-Independent Structure
+The segmentation patterns observed across the MLP, Flow, and Diffusion models appear broadly aligned. This summary figure overlays the three segmentations to highlight their shared structure.
 
 <p align="center">
-	<img src="figures/fig6_flow_geometry.png" width="420">
+	<img src="figures/fig8_segmentation_overlay.png" width="520">
 </p>
 
-(Figure 6: Flow Geometry)
-
-<p align="center">
-	<img src="figures/fig7_diffusion_dynamics.png" width="420">
-</p>
-
-(Figure 7: Diffusion Dynamics)
+(Figure 8: Segmentation overlay across MLP, Flow, and Diffusion)
 
 ---
 
@@ -201,3 +218,21 @@ the explained variances.
 - Hyperparameters
 - Training curves
 - Additional visualizations
+
+
+References
+Taniguchi, T., et al. (2026). Symbol Emergence Systems: An Interdisciplinary Discussion About Cognition, Language and Society. Springer.
+
+Taniguchi, T., et al. (2016). Symbol emergence in cognitive developmental systems: A survey. IEEE Transactions on Cognitive and Developmental Systems.
+
+Nakamura, T., et al. (2014). Multimodal categorization and symbol emergence. Advanced Robotics.
+
+Ha, D., & Schmidhuber, J. (2018). World Models. arXiv:1803.10122.
+
+Ho, J., Jain, A., & Abbeel, P. (2020). Denoising Diffusion Probabilistic Models. NeurIPS.
+
+Dinh, L., Sohl-Dickstein, J., & Bengio, S. (2017). Density estimation using Real NVP. ICLR.
+
+Arora, R., et al. (2018). Understanding deep neural networks with rectified linear units. ICLR.
+
+MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Berkeley Symposium.

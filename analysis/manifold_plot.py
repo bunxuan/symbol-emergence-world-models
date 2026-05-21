@@ -21,6 +21,8 @@ FLOW_MODEL_PATH = MODEL_DIR / "flow.pth"
 FLOW_SAMPLES_PATH = MODEL_DIR / "flow_samples.npy"
 DIFFUSION_MODEL_PATH = MODEL_DIR / "diffusion.pth"
 DIFFUSION_CHAIN_PATH = MODEL_DIR / "diffusion_chain.npy"
+FLOW_NUM_LAYERS = 8
+FLOW_HIDDEN_DIM = 128
 
 if str(MODEL_DIR) not in sys.path:
     sys.path.insert(0, str(MODEL_DIR))
@@ -55,7 +57,9 @@ def plot_flow_comparison(
         if not flow_path.exists():
             raise FileNotFoundError(f"Missing flow checkpoint: {flow_path}")
 
-        flow = FlowModule(latent_dim)
+        flow = FlowModule(
+            latent_dim, num_layers=FLOW_NUM_LAYERS, hidden_dim=FLOW_HIDDEN_DIM
+        )
         flow.load_state_dict(torch.load(flow_path, map_location="cpu"))
         flow.eval()
         with torch.no_grad():

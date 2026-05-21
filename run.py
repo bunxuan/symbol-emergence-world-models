@@ -25,8 +25,11 @@ def run_world_pipeline() -> None:
 
 
 def run_flow_pipeline() -> None:
-    run_script(PROJECT_ROOT / "model" / "train_flow.py")
+    # run_script(PROJECT_ROOT / "model" / "train_flow.py")
     run_script(PROJECT_ROOT / "analysis" / "flow_geometry.py")
+    run_script(PROJECT_ROOT / "analysis" / "flow_jacobian.py")
+    run_script(PROJECT_ROOT / "analysis" / "flow_segmentation.py")
+    run_script(PROJECT_ROOT / "analysis" / "latent_structure_comparison.py")
 
 
 def run_diffusion_pipeline() -> None:
