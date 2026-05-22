@@ -1,5 +1,17 @@
 # Symbol Emergence in a 1D World Model
 
+## Full Report
+
+The main mechanistic analysis is documented in the report:
+
+<p align="center">
+  <a href="report/mini_report.md" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;">
+    Open Mini Report / Preprint Draft
+  </a>
+</p>
+
+The README provides a concise project overview; the report contains the full methods, results, figures, and references.
+
 ## Key Mechanistic Insights
 
 This project suggests that discrete symbolic structure can emerge from continuous predictive dynamics in a simple 1D environment.  

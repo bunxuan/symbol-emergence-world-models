@@ -42,6 +42,25 @@ def _project_pair(real_points, generated_points):
     return pca.transform(real_points), pca.transform(generated_points)
 
 
+def _plot_time_gradient_trajectory(ax, points, title, line_color="#d97706"):
+    time_index = np.arange(len(points))
+    ax.plot(points[:, 0], points[:, 1], color="#cbd5e1", linewidth=1.0, alpha=0.55)
+    scatter = ax.scatter(
+        points[:, 0],
+        points[:, 1],
+        c=time_index,
+        cmap="plasma",
+        s=8,
+        alpha=0.95,
+        zorder=2,
+    )
+    ax.set_title(title)
+    ax.set_xlabel("PC1")
+    ax.set_ylabel("PC2")
+    ax.grid(True, alpha=0.2)
+    return scatter
+
+
 def plot_flow_comparison(
     latent_path=LATENT_PATH,
     flow_path=FLOW_MODEL_PATH,
@@ -120,7 +139,10 @@ def plot_diffusion_comparison(
 
     latent_2d, chain_2d = _project_pair(latent, chain)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    tail_start = max(0, int(len(chain_2d) * (3.0 / 4.0)))
+    tail_2d = chain_2d[tail_start:]
+
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
 
     axes[0].plot(latent_2d[:, 0], latent_2d[:, 1], color="#2563eb", linewidth=1.2)
     axes[0].scatter(latent_2d[:, 0], latent_2d[:, 1], s=8, alpha=0.55, color="#2563eb")
@@ -129,12 +151,15 @@ def plot_diffusion_comparison(
     axes[0].set_ylabel("PC2")
     axes[0].grid(True, alpha=0.2)
 
-    axes[1].plot(chain_2d[:, 0], chain_2d[:, 1], color="#d97706", linewidth=1.2)
-    axes[1].scatter(chain_2d[:, 0], chain_2d[:, 1], s=8, alpha=0.55, color="#d97706")
-    axes[1].set_title("Diffusion reverse chain")
-    axes[1].set_xlabel("PC1")
-    axes[1].set_ylabel("PC2")
-    axes[1].grid(True, alpha=0.2)
+    scatter = _plot_time_gradient_trajectory(
+        axes[1], chain_2d, "Diffusion reverse chain"
+    )
+    fig.colorbar(scatter, ax=axes[1], label="time step")
+
+    tail_scatter = _plot_time_gradient_trajectory(
+        axes[2], tail_2d, "Tail zoom (last 1/4)", line_color="#d97706"
+    )
+    fig.colorbar(tail_scatter, ax=axes[2], label="time step")
 
     fig.tight_layout()
     fig.savefig(save_path, dpi=300)

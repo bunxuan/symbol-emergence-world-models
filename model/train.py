@@ -114,7 +114,7 @@ def train_flow(
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    model.train()
+    model.train()   
     for epoch in range(epochs):
         total_loss = 0.0
         for (batch_h,) in loader:

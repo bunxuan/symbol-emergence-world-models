@@ -1,5 +1,11 @@
 A preprint based on this repository is currently in preparation.
 
+<p align="center">
+	<a href="../README.md" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;">
+		Back to Project README
+	</a>
+</p>
+
 # Symbol Emergence from Predictive Dynamics in a 1D World Model
 _A mechanistic study of how discrete symbolic structure arises from continuous latent dynamics_
 
@@ -128,7 +134,6 @@ We analyze the diffusion reverse chain to examine whether the same symbolic stru
 <table align="center">
 	<tr>
 		<td align="center"><img src="figures/fig7a_diffusion_reverse_chain.png" width="260"><br>(Figure 7a: diffusion reverse chain)</td>
-		<td align="center"><img src="figures/fig7b_diffusion_segmentation.png" width="260"><br>(Figure 7b: diffusion segmentation)</td>
 		<td align="center"><img src="figures/fig7c_diffusion_vs_real_latent_comparison.png" width="260"><br>(Figure 7c: diffusion vs real latent comparison)</td>
 	</tr>
 </table>
@@ -220,19 +225,13 @@ the explained variances.
 - Additional visualizations
 
 
-References
-Taniguchi, T., et al. (2026). Symbol Emergence Systems: An Interdisciplinary Discussion About Cognition, Language and Society. Springer.
+## References
 
-Taniguchi, T., et al. (2016). Symbol emergence in cognitive developmental systems: A survey. IEEE Transactions on Cognitive and Developmental Systems.
-
-Nakamura, T., et al. (2014). Multimodal categorization and symbol emergence. Advanced Robotics.
-
-Ha, D., & Schmidhuber, J. (2018). World Models. arXiv:1803.10122.
-
-Ho, J., Jain, A., & Abbeel, P. (2020). Denoising Diffusion Probabilistic Models. NeurIPS.
-
-Dinh, L., Sohl-Dickstein, J., & Bengio, S. (2017). Density estimation using Real NVP. ICLR.
-
-Arora, R., et al. (2018). Understanding deep neural networks with rectified linear units. ICLR.
-
-MacQueen, J. (1967). Some methods for classification and analysis of multivariate observations. Berkeley Symposium.
+- Taniguchi, T., et al. (2026). *Symbol Emergence Systems: An Interdisciplinary Discussion About Cognition, Language and Society*. Springer.
+- Taniguchi, T., et al. (2016). *Symbol emergence in cognitive developmental systems: A survey*. IEEE Transactions on Cognitive and Developmental Systems.
+- Nakamura, T., et al. (2014). *Multimodal categorization and symbol emergence*. Advanced Robotics.
+- Ha, D., & Schmidhuber, J. (2018). *World Models*. arXiv:1803.10122.
+- Ho, J., Jain, A., & Abbeel, P. (2020). *Denoising Diffusion Probabilistic Models*. NeurIPS.
+- Dinh, L., Sohl-Dickstein, J., & Bengio, S. (2017). *Density estimation using Real NVP*. ICLR.
+- Arora, R., et al. (2018). *Understanding deep neural networks with rectified linear units*. ICLR.
+- MacQueen, J. (1967). *Some methods for classification and analysis of multivariate observations*. Berkeley Symposium.

@@ -35,6 +35,7 @@ def run_flow_pipeline() -> None:
 def run_diffusion_pipeline() -> None:
     run_script(PROJECT_ROOT / "model" / "train_diffusion.py")
     run_script(PROJECT_ROOT / "analysis" / "diffusion_dynamics.py")
+    run_script(PROJECT_ROOT / "analysis" / "diffusion_figures.py")
 
 
 def main() -> None:
