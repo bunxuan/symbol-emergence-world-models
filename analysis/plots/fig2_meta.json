@@ -1,0 +1,7 @@
+{
+     "figure": "fig2_latent_pca.png",
+     "N": 999,
+     "seed": 42,
+     "d_latent_figures": 8,
+     "note": "PCA computed on model/latent.npy. Figures use d_latent=8 unless stated."
+}

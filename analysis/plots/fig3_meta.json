@@ -1,0 +1,8 @@
+{
+     "figure": "fig3_jacobian.png",
+     "N": 999,
+     "seed": 42,
+     "d_latent_figures": 8,
+     "jacobian_method": "autograd on WorldModel.decoder->encoder",
+     "note": "Frobenius norm shown; thresholding used for peak detection in Appendix."
+}

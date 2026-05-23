@@ -1,0 +1,12 @@
+{
+     "figure": "fig4_symbol_clusters.png",
+     "N": 999,
+     "seed": 42,
+     "d_latent_figures": 8,
+     "clustering": {
+          "method": "KMeans",
+          "k": 4,
+          "n_init": 20,
+          "random_state": 0
+     }
+}

@@ -1,0 +1,7 @@
+{
+     "figure": "fig7_diffusion_vs_real.png",
+     "N": 999,
+     "seed": 42,
+     "d_latent_figures": 8,
+     "note": "Diffusion reverse chain is stochastic; plotted sample is one realization."
+}

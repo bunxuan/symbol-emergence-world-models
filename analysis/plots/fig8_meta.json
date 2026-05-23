@@ -1,0 +1,7 @@
+{
+     "figure": "fig8_segmentation_overlay.png",
+     "N": 999,
+     "seed": 42,
+     "d_latent_figures": 8,
+     "note": "Cross-model overlay: flow samples Procrustes-aligned; clustering k=4."
+}

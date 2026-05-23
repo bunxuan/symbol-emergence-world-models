@@ -1,71 +1,68 @@
 # Symbol Emergence in a 1D World Model
 
-## Full Report
+This repository explores how **discrete symbolic structure** can emerge from **continuous predictive dynamics** in a minimal one-dimensional environment.  
+The project provides a mechanistic analysis of how **latent geometry**, **Jacobian discontinuities**, and **transition structure** give rise to symbolic boundaries.
 
-The main mechanistic analysis is documented in the report:
+---
+
+## Full Report (Mini Preprint)
+
+The full mechanistic analysis—including methods, results, figures, and references—is available here:
 
 <p align="center">
   <a href="report/mini_report.md" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;">
     Open Mini Report / Preprint Draft
   </a>
+  <a href="report/mini_report.pdf" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#0f766e;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;margin-left:8px;">
+    Open mini_report.pdf
+  </a>
 </p>
 
-The README provides a concise project overview; the report contains the full methods, results, figures, and references.
+The README provides a concise overview; the report contains the full technical details.
+
+---
 
 ## Key Mechanistic Insights
 
-This project suggests that discrete symbolic structure can emerge from continuous predictive dynamics in a simple 1D environment.  
-The following observations summarize the main mechanisms we observe in the learned representations.
+This project suggests that **symbolic boundaries** can emerge when a predictive model must represent **structurally different predictive regimes**.
 
-- **Latent Manifold**  
-  PCA indicates that the latent representation lies on a smooth, low‑dimensional trajectory rather than forming a scattered cloud.  
-  The world model compresses continuous dynamics into a structured manifold.
+### • Latent Manifold  
+PCA shows that the latent trajectory lies on a **smooth, low‑dimensional manifold** rather than a scattered cloud.  
+The world model compresses continuous dynamics into a structured trajectory.
 
-- **Jacobian Variations**  
-  The encoder is piecewise linear, so changes in ReLU activation patterns can produce jumps in the Jacobian.  
-  In this dataset, those changes appear to be associated with physical event boundaries and provide a plausible mechanism for symbolic segmentation.
+### • Jacobian Discontinuities  
+Because the encoder is piecewise linear, changes in ReLU activation patterns produce **sharp Jacobian jumps**.  
+These jumps align with physical event boundaries (wall collisions), providing a mechanistic marker of symbolic segmentation.
 
-- **Symbol Clustering**  
-  K‑means on the latent trajectory discretizes the continuous manifold into phase‑like segments.  
-  Each segment can be interpreted as a distinct predictive regime, forming an emergent symbolic state.
+### • Symbol Clustering  
+K‑means discretizes the latent manifold into **phase‑like segments**, each corresponding to a distinct predictive regime.
 
-- **State Machine**  
-  The sequence of cluster assignments forms a discrete symbolic state sequence.  
-  Aggregating transitions yields a symbolic state machine that captures the environment’s predictive dynamics.
+### • Symbolic State Machine  
+The sequence of cluster assignments forms a **discrete symbolic state sequence**, which induces a compact **state‑transition graph** summarizing predictive dynamics.
 
-- **Model Robustness (Flow & Diffusion)**  
-  Flow models largely preserve the segmentation because invertible maps do not create new boundaries on their own.  
-  Diffusion reverse chains reconstruct similar boundaries, suggesting that the symbolic structure is driven primarily by the environment rather than by a single model choice.
-
+### • Model Robustness (Flow & Diffusion)  
+- **Flow models** preserve segmentation‑like boundaries because invertible maps cannot create or destroy topological structure.  
+- **Diffusion reverse chains** reproduce **similar large‑scale geometric bends**, though with stochastic dispersion.  
+Together, these results suggest that symbolic boundaries arise primarily from the **environment’s predictive structure**, not from a specific architecture.
 
 <p align="center">
   <img src="report/figures/fig1_pipeline.png" width="720">
 </p>
 
-This repository explores **how discrete symbolic structure can emerge from continuous predictive dynamics** in a simple 1D bouncing-ball environment.  
-The project investigates the mechanisms by which **latent discontinuities, Jacobian changes, and transition structure** give rise to symbolic boundaries.
-
-The experiments combine:
-- A compact **world model** (encoder–transition–decoder)
-- A **flow model** (RealNVP) on latent space
-- A **diffusion model** (denoising latent dynamics)
-- A full analysis pipeline for **latent geometry**, **Jacobian structure**, **symbol clustering**, and **state-transition graphs**
-
-The goal is to provide a minimal but mechanistic demonstration of **individual symbol emergence**, forming a foundation for future work on **social symbol emergence**.
-
 ---
 
 ## 1. Overview
 
-This project studies the hypothesis:
+We investigate the hypothesis:
 
 > **Symbolic boundaries arise when predictive dynamics undergo structural changes.**
 
-Using a 1D environment with deterministic physics, we show that:
-- Latent trajectories become **piecewise-linear**
-- Encoder Jacobian exhibits **sharp discontinuities** at wall-bounce events
-- These discontinuities align with **emergent symbolic states**
-- Flow and diffusion models reveal **consistent symbolic geometry**
+Using a deterministic 1D bouncing‑ball environment, we observe:
+
+- Latent trajectories become **piecewise‑linear**  
+- Encoder Jacobian exhibits **sharp discontinuities** at collisions  
+- These discontinuities align with **emergent symbolic states**  
+- Flow and diffusion models reveal **consistent geometric trends**  
 - A discrete **symbolic state machine** emerges from continuous dynamics
 
 ---
@@ -87,64 +84,58 @@ symbol-emergence-world-models/
 
 ## 3. Key Results
 
-### **Latent PCA**
+### Latent PCA
 <p align="center">
-  <img src="report/figures/fig2_latent_pca.png" width="480">
+<img src="report/figures/fig2_latent_pca.png" width="480">
 </p>
 
-Latent trajectories form **segmented linear regions**, suggesting discrete regimes.
+Latent trajectories form segmented linear regions, indicating distinct predictive regimes.
 
----
-
-### **Jacobian Discontinuity**
+### Jacobian Discontinuity
 <p align="center">
-  <img src="report/figures/fig3_jacobian.png" width="480">
+<img src="report/figures/fig3_jacobian.png" width="480">
 </p>
 
-Encoder Jacobian shows **sharp structural changes** at bounce events —  
+Encoder Jacobian shows sharp structural changes at bounce events —
 a mechanistic origin of symbolic boundaries.
 
----
-
-### **Symbol Clusters & State Machine**
+### Symbol Clusters & State Machine
 <p align="center">
-  <img src="report/figures/fig4_symbol_clusters.png" width="420">
-  <img src="report/figures/fig5_state_machine.png" width="420">
+<img src="report/figures/fig4_symbol_clusters.png" width="420">
+<img src="report/figures/fig5_state_machine.png" width="420">
 </p>
 
-Discrete symbolic states emerge naturally, forming a **predictive state-transition graph**.
+Discrete symbolic states emerge naturally, forming a predictive state‑transition graph.
 
----
-
-### **Flow & Diffusion Dynamics**
+### Flow & Diffusion Dynamics
 <p align="center">
-  <img src="report/figures/fig6_flow_geometry.png" width="420">
-  <img src="report/figures/fig7_diffusion_dynamics.png" width="420">
+<img src="report/figures/fig6_flow_geometry.png" width="420">
+<img src="report/figures/fig7_diffusion_dynamics.png" width="420">
 </p>
 
-Both reversible (flow) and generative (diffusion) models preserve the same symbolic boundaries,  
-indicating **model-independent symbolic structure**.
+Flow models preserve segmentation‑like boundaries via invertible reparameterizations.
+Diffusion reverse chains reproduce similar geometric bends with stochastic dispersion.
 
----
+## 4. Methods (Brief)
+Environment: 1D bouncing ball (deterministic)
 
-## 4. Methods
+World Model: encoder → transition → decoder
 
-- **Environment:** 1D bouncing ball with deterministic physics  
-- **World Model:** encoder → transition → decoder  
-- **Flow Model:** RealNVP on latent space  
-- **Diffusion Model:** denoising latent dynamics  
-- **Analysis:** PCA, Jacobian, clustering, symbolic transition graph
+Flow Model: RealNVP on latent space
 
-All code is modular and reproducible.
+Diffusion Model: denoising latent dynamics
+
+Analysis: PCA, Jacobian, clustering, symbolic transition graph
+
+Full details are in the report.
 
 ## 5. Run
-
 Windows:
 
 ```bat
 run.bat
 run.bat all
-scripts\run_all.bat
+scripts\\run_all.bat
 ```
 
 Or run individual stages:
@@ -155,32 +146,22 @@ run.bat flow
 run.bat diffusion
 ```
 
----
-
 ## 6. Toward Social Symbol Emergence
+This project focuses on individual symbol emergence.
+Future work will extend this framework to multi‑agent systems, where:
 
-This project focuses on **individual symbol emergence** —  
-how a single agent’s predictive dynamics produce symbolic boundaries.
+Agents align or negotiate symbolic categories
 
-In future work, this framework can extend to **multi-agent systems**, where:
-- Agents share or negotiate symbolic categories  
-- Communication induces alignment  
-- Symbol systems emerge at the **societal level**
+Communication stabilizes shared symbols
 
-This connects directly to ongoing research in **Symbol Emergence Systems**.
-
----
+Symbol systems emerge at the societal level
 
 ## 7. Citation
-
-A preprint is in preparation.  
-If you find this project useful, please cite or star the repository.
-
----
+A preprint is in preparation.
+If you find this project useful, please star the repository or cite the report.
 
 ## 8. Contact
-
-**Xu Wenxuan**  
-Ningbo University of Technology  
+Xu Wenxuan  
+Ningbo University of Technology
 GitHub: https://github.com/bunxuan  
 Email: jyosa@nbut.edu.cn

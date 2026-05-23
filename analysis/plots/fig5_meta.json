@@ -1,0 +1,7 @@
+{
+     "figure": "fig5_state_machine.png",
+     "N": 999,
+     "seed": 42,
+     "k": 4,
+     "note": "State-transition graph derived from clustered latent sequence (k=4)."
+}

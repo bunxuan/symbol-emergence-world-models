@@ -1,260 +1,186 @@
-A preprint based on this repository is currently in preparation.
+# Symbol Emergence in a 1D World Model
+
+## Full Report
+
+The main mechanistic analysis is documented in the report:
 
 <p align="center">
-	<a href="../README.md" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;">
-		Back to Project README
-	</a>
+  <a href="report/mini_report.md" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;letter-spacing:0.2px;">
+    Open Mini Report / Preprint Draft
+  </a>
 </p>
 
-# Symbol Emergence from Predictive Dynamics in a 1D World Model
-_A mechanistic study of how discrete symbolic structure arises from continuous latent dynamics_
+The README provides a concise project overview; the report contains the full methods, results, figures, and references.
 
----
-## Abstract
-Understanding how discrete symbolic structure can arise from continuous sensorimotor experience remains a central challenge in cognitive science and machine learning. Using a minimal one-dimensional bouncing-ball environment, we show that a predictive world model develops a latent trajectory that lies on a smooth manifold segmented by sharp transitions. These transitions align with changes in predictive regimes, and discontinuities in the encoder Jacobian provide a mechanistic marker of these boundaries.
+## Key Mechanistic Insights
 
-Combining latent-geometry analysis, Jacobian inspection, and clustering, we extract symbolic states whose transitions form a compact state-transition graph summarizing the environment's dynamics. Crucially, similar segmentation patterns appear across multi-layer perceptrons (MLPs), invertible flow models, and diffusion models. Flows preserve the boundaries through topology-preserving transformations, while diffusion models reconstruct them through geometry-guided denoising. This cross-model consistency indicates that symbolic boundaries arise from the environment's predictive structure rather than architecture-specific inductive biases.
+This project suggests that discrete symbolic structure can emerge from continuous predictive dynamics in a simple 1D environment.  
+The following observations summarize the main mechanisms we observe in the learned representations.
 
-This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone. For reproducibility, code and configuration files are available in `symbol-emergence-1d/model/`, and the Appendix summarizes the settings used in the paper (seed=42; `d_latent=8`; N≈20,000 samples; KMeans `k=4` where not otherwise specified).
+- **Latent Manifold**  
+  PCA indicates that the latent representation lies on a smooth, low‑dimensional trajectory rather than forming a scattered cloud.  
+  The world model compresses continuous dynamics into a structured manifold.
 
-## 1. Introduction
-Understanding how discrete symbolic structure can emerge from continuous sensorimotor experience is a central question in cognitive science and machine learning. Predictive world models provide a minimal setting in which such structure may arise: to forecast future states, the model must compress continuous dynamics into an internal representation that supports accurate prediction. This raises a fundamental question: what structure does a predictive model impose on its latent space, and how does this structure relate to the environment's dynamics?
+- **Jacobian Variations**  
+  The encoder is piecewise linear, so changes in ReLU activation patterns can produce jumps in the Jacobian.  
+  In this dataset, those changes appear to be associated with physical event boundaries and provide a plausible mechanism for symbolic segmentation.
 
-To investigate this question, we analyze the latent representations of a world model trained on a simple one-dimensional bouncing-ball environment. This environment offers a controlled testbed in which continuous motion is punctuated by discrete events, allowing us to isolate how predictive models respond to changes in dynamical regimes. Despite its simplicity, the setting captures the essential challenge of symbol emergence: continuous trajectories must be organized into discrete, behaviorally meaningful units.
+- **Symbol Clustering**  
+  K‑means on the latent trajectory discretizes the continuous manifold into phase‑like segments.  
+  Each segment can be interpreted as a distinct predictive regime, forming an emergent symbolic state.
 
-Our approach combines geometric, differential, and clustering-based analyses. PCA reveals the global organization of the latent trajectory, while the encoder Jacobian exposes local changes in sensitivity that provide a differential signature of regime transitions. Clustering the latent states further reveals discrete segments that correspond to qualitatively distinct phases of the environment's dynamics. The reported experimental settings are `d_latent=8`, KMeans `k∈{3,4,5}` (typical figures use `k=4`), and analysis sample size `N≈20,000` latent states (see Appendix for the full sweep and sensitivity checks).
+- **State Machine**  
+  The sequence of cluster assignments forms a discrete symbolic state sequence.  
+  Aggregating transitions yields a symbolic state machine that captures the environment’s predictive dynamics.
+
+- **Model Robustness (Flow & Diffusion)**  
+  Flow models largely preserve the segmentation because invertible maps do not create new boundaries on their own.  
+  Diffusion reverse chains reconstruct similar boundaries, suggesting that the symbolic structure is driven primarily by the environment rather than by a single model choice.
 
 
-Across multiple architectures - including multi-layer perceptrons (MLPs), invertible flow models, and diffusion models - we observe a consistent pattern: the latent trajectory forms a smooth manifold segmented by sharp transitions aligned with event boundaries. These segments can be interpreted as symbolic states, and their transitions form a compact state-transition graph that summarizes the predictive structure of the environment. The cross-model consistency suggests that the observed symbolic boundaries arise from the environment's predictive dynamics rather than architecture-specific inductive biases.
-This minimal framework allows us to examine how symbolic structure may emerge from prediction alone, without supervision or predefined categories. It also provides a mechanistic foundation for extending symbol-emergence studies to richer environments and, ultimately, to multi-agent systems in which symbolic categories may be aligned, shared, or negotiated.
+<p align="center">
+  <img src="report/figures/fig1_pipeline.png" width="720">
+</p>
 
+This repository explores **how discrete symbolic structure can emerge from continuous predictive dynamics** in a simple 1D bouncing-ball environment.  
+The project investigates the mechanisms by which **latent discontinuities, Jacobian changes, and transition structure** give rise to symbolic boundaries.
 
-## Related Work
-Research on symbol emergence has examined how discrete categories can arise from continuous sensorimotor experience. Prior work has described symbol emergence as a multi-layered process involving individual representation learning, multimodal categorization, and eventually the formation of shared symbol systems within society. Other studies have explored how agents acquire internal categories through interaction and prediction, highlighting the role of predictive processing in structuring latent representations. Our work follows this general line of research but focuses on a more mechanistic question: how symbolic boundaries arise within the latent dynamics of a predictive model, even without multimodality or social interaction.
+The experiments combine:
+- A compact **world model** (encoder–transition–decoder)
+- A **flow model** (RealNVP) on latent space
+- A **diffusion model** (denoising latent dynamics)
+- A full analysis pipeline for **latent geometry**, **Jacobian structure**, **symbol clustering**, and **state-transition graphs**
 
-Predictive world models provide a minimal setting for studying such emergence. Earlier studies on predictive coding and learned dynamics have shown that latent spaces often reflect environmental structure, but these works typically emphasize performance or compression rather than the geometry of the latent trajectory. In contrast, we analyze how predictive regimes shape the latent manifold itself, and how discrete symbolic states may arise from transitions between these regimes.
-
-Our approach is also related to research on representation geometry and mechanistic interpretability, which uses tools such as PCA, SVD, and Jacobian analysis to study the structure of learned representations. Prior work has examined curvature, linear regions, and activation patterns in neural networks, but has not connected these geometric features to the emergence of symbolic structure. Jacobian discontinuities provide a direct mechanistic link between predictive dynamics and symbolic segmentation.
-
-Finally, our analysis draws on flow-based and diffusion-based generative models. Flow models provide invertible mappings that preserve structural boundaries, while diffusion models reconstruct trajectories through iterative denoising. Although these models are typically used for density estimation or generation, we show that both preserve similar segmentation patterns, suggesting that the observed symbolic boundaries are driven by the environment’s predictive structure rather than architectural artifacts.
-
----
-
-## 2. Methods
-
-### Training Procedure
-
-The world model is trained by gradient-based optimization to minimize prediction loss.
-
-### Environment
-
-We use a deterministic one-dimensional bouncing-ball environment in which the agent observes the ball position over time and the only discrete events are left-wall and right-wall collisions. This setting isolates how symbolic boundaries arise from predictive dynamics.
-
-### World Model
-
-The world model combines an encoder and decoder in a low-dimensional latent space, and it is trained to reconstruct observations while forecasting the next step.
-
-### Flow Model
-
-A RealNVP flow model is trained on the latent trajectories to probe the reversible geometry of the representation. Because the flow is invertible, it provides a direct test of whether symbolic boundaries persist under a bijective reparameterization.
-
-### Diffusion Model
-
-A denoising diffusion model is trained on latent trajectories to study the generative dynamics. Its reverse chain is compared with the real latent trajectory to test whether the same segmentation reappears under iterative denoising.
-
-### Analysis Pipeline
-
-We analyze latent geometry with PCA, detect local structural changes with encoder Jacobians, cluster latent states into symbolic categories, and construct the induced state-transition graph.
-
-## 3. Results
-
-### 3.1 Latent Geometry and Symbol Segmentation
-
-![Figure 2: PCA projection of the latent trajectory.](figures/fig2_latent_pca.png)
-
-Figure 2. PCA projection of the latent trajectory, showing a low-dimensional manifold with collision-marked breakpoints.
-
-The encoder Jacobian changes sharply at the same event locations, indicating nonuniform local sensitivity along the trajectory.
-
-![Figure 3: Encoder Jacobian over time.](figures/fig3_jacobian.png)
-
-Figure 3. Encoder Jacobian over time, highlighting sharp sensitivity changes aligned with collisions.
-
-Clustering the latent states produces a small number of compact groups that partition the trajectory into discrete regions of the predictive latent space.
-
-![Figure 4: Symbol segmentation in latent space.](figures/fig4_symbol_clusters.png)
-
-Figure 4. Symbol segmentation in latent space, where clustering partitions the trajectory into symbolic regions.
-
-The resulting state-transition graph summarizes the repeated switching pattern observed along the trajectory.
-
-![Figure 5: Symbolic state-transition graph derived from the clustered latent sequence.](figures/fig5_state_machine.png)
-
-Figure 5. Symbolic state-transition graph summarizing transitions among the inferred states.
-
-### 3.2 Flow Model Analysis (Model Independence)
-Because flows are invertible, they provide a natural test of whether the observed segmentation persists under a bijective transformation of the latent space.
-
-![Figure 6a: Flow latent segmentation.](figures/fig6a_flow_latent_segmentation.png)
-
-![Figure 6b: Flow Jacobian time series.](figures/fig6b_flow_jacobian_timeseries.png)
-
-![Figure 6c: Latent structure comparison.](figures/fig6c_latent_structure_comparison.png)
-
-Figure 6. Flow-model comparison, showing that the segmentation survives an invertible reparameterization.
-
-### 3.3 Diffusion Model Analysis
-
-Diffusion models reconstruct data through iterative denoising, so they provide a complementary test of whether the same segmentation structure reappears in the generative setting.
-
-![Figure 7: Diffusion vs. real latent trajectory.](figures/fig7_diffusion_vs_real.png)
-
-Figure 7. Diffusion-model comparison, showing the same coarse segmentation in the sampled trajectory.
-
-### 3.4 Summary of Model-Independent Structure
-Despite their architectural differences, the MLP, flow, and diffusion models exhibit closely aligned segmentation patterns, suggesting that the observed boundaries reflect environment-induced structure rather than model-specific inductive bias. The summary figure below combines the most informative views of this shared structure.
-
-![Figure 8: Cross-model segmentation summary.](figures/fig8_segmentation_overlay.png)
-
-Figure 8. Cross-model segmentation summary, highlighting the shared segmentation pattern across models.
+The goal is to provide a minimal but mechanistic demonstration of **individual symbol emergence**, forming a foundation for future work on **social symbol emergence**.
 
 ---
 
-## 4. Discussion
+## 1. Overview
 
-### 4.1 Predictive Latent Geometry
-The PCA results suggest that the learned latent trajectory does not form an unstructured cloud, but instead lies on a low-dimensional manifold with piecewise-smooth geometry. In the one-dimensional bouncing-ball environment, the underlying dynamics are simple but not uniform: free motion, boundary approach, and post-collision motion correspond to different predictive situations. The world model must compress these situations into a representation that supports forecasting, and that compression appears to organize the latent space into connected regions with directional changes rather than a single globally smooth curve. This geometry matters because it suggests that predictive dynamics do not merely produce a compact representation; they also induce structure in that representation. In other words, the latent manifold is shaped by the requirements of prediction itself. Such a piecewise-smooth structure is a natural substrate for symbol emergence, because discrete symbolic categories can be defined as stable partitions of a continuous predictive manifold.
+This project studies the hypothesis:
 
-### 4.2 Mechanism of Symbolic Boundaries
-The local mechanism behind these boundaries is the switching of ReLU activation patterns in the encoder. Because the encoder is piecewise linear, each change in activation pattern induces a new local linearization, which appears in the Jacobian as a jump or sharp change. In this setting, the Jacobian is not just a descriptive diagnostic; it marks transitions between predictive regimes. When the system approaches a collision, the model must switch from one prediction strategy to another, and that regime switching is reflected as a discontinuity in sensitivity to the input. This is why the Jacobian peaks are aligned with event boundaries in the trajectory. At the mechanistic level, a predictive regime is therefore not just a mode of behavior in the environment, but a mode of representation in the model. The correspondence between regime switching and Jacobian discontinuity is the strongest evidence in this study that symbolic boundaries can emerge from model internals rather than being imposed externally. In this sense, the boundary is "symbolic" because it separates distinct predictive organizations, and it is mechanistic because the separation is realized by a change in the encoder's local linear geometry.
+> **Symbolic boundaries arise when predictive dynamics undergo structural changes.**
 
-### 4.3 From Manifold to Discrete Symbols
-Once the latent geometry is segmented, k-means provides a simple way to discretize the continuous manifold into a finite set of clusters. Each cluster can be interpreted as a symbolic state: not a ground-truth label of the environment, but a stable region of the predictive latent space. The transition structure among these clusters then yields a state-transition graph, which captures how the representation moves from one predictive regime to another over time. This is the essential symbolic step in the analysis: a continuous trajectory becomes a discrete sequence of states, and the sequence can be summarized as a state-transition graph. The value of this construction is not merely visual; it shows how symbol-like categories can emerge from geometry without explicit supervision. The clustering step turns a smooth predictive manifold into a finite symbolic alphabet, and the state-transition graph turns that alphabet into structured dynamics while preserving temporal order.
+Using a 1D environment with deterministic physics, we show that:
+- Latent trajectories become **piecewise-linear**
+- Encoder Jacobian exhibits **sharp discontinuities** at wall-bounce events
+- These discontinuities align with **emergent symbolic states**
+- Flow and diffusion models reveal **consistent symbolic geometry**
+- A discrete **symbolic state machine** emerges from continuous dynamics
 
-### 4.4 Model-Independent Structure
-The comparison across MLP, flow, and diffusion models is the strongest test of whether the observed segmentation is architecture-specific or environment-driven. For the flow model, invertibility is crucial. A flow such as RealNVP transforms latent coordinates through a sequence of bijective maps, which means it can reshape the manifold but cannot merge two distinct regions into one or create a new boundary that was not already present in the learned representation. Topology is preserved, so segmentation can be expressed in a new coordinate system but not fundamentally destroyed. This is why flow latent segmentation aligns with the MLP segmentation, and why the Procrustes comparison reveals near-identical geometry. The flow Jacobian time series further supports this view: the same event-related changes appear in the transformed latent space, indicating that the boundary structure survives the invertible mapping.
+---
 
-Diffusion provides a different kind of evidence. Its reverse process is stochastic, but the denoising trajectory is not arbitrary: each step follows the geometry of the data manifold by removing predicted noise and moving toward higher-density regions. Because the learned manifold is piecewise smooth, the reverse chain tends to reproduce the same large-scale bends and directional discontinuities that appear in the predictive latent trajectory. In practice, this is why diffusion reverse paths bend at similar locations and why diffusion segmentation resembles the MLP segmentation. The key point is that diffusion is stochastic at the sampling level, but geometry-dominated at the representation level. The manifold constrains the denoising direction, so symbolic boundaries reappear even under randomness.
+## 2. Repository Structure
 
-Taken together, these results support a unified explanation: predictive regimes impose latent geometry, geometry induces segmentation, and segmentation gives rise to symbolic boundaries. This chain does not depend on a particular architecture. Instead, it appears across deterministic predictive models, invertible flows, and stochastic diffusion models because all of them must represent the same environment-induced structure. The architectural differences change how the structure is expressed, but not whether it appears. That is the core sense in which the observed symbolic boundaries are model-independent.
-
-### 4.5 Toward Social Symbol Emergence
-Although the present study focuses on symbol emergence within a single predictive agent, the resulting structure suggests a natural path toward multi-agent symbol systems. If symbolic boundaries arise from predictive regimes, then different agents interacting in the same environment may develop partially aligned segmentation patterns. Communication can then serve as a mechanism for negotiating, stabilizing, or reshaping these boundaries. In this view, shared symbols are not arbitrary labels but the outcome of aligning predictive manifolds across agents.
-
-The minimal framework explored here provides a foundation for such investigations. A multi-agent extension would allow us to examine how individually formed symbolic states become coordinated through interaction, how disagreements in segmentation are resolved, and how shared symbolic categories emerge from the need to predict each other's behavior. This perspective is consistent with the broader account of symbol emergence proposed in Symbol Emergence Systems (2026), in which social interaction plays a central role in transforming individual predictive structures into communal symbol systems. The present results therefore offer a mechanistic starting point for studying how continuous predictive dynamics can scale from individual cognition to collective symbolic organization.
-
-## Conclusion
-
-The experiments presented in this work show that discrete symbolic structure can emerge from the geometry of predictive latent spaces, even in a minimal one-dimensional environment. The latent trajectory learned by the world model forms a piecewise-smooth manifold whose directional changes align with transitions between predictive regimes. These regime boundaries appear as discontinuities in the encoder Jacobian and can be discretized into symbolic states that summarize the environment's dynamics in compact form.
-
-A key finding is that this structure is not specific to a particular architecture. Invertible flow models preserve the same segmentation because they cannot alter the topology of the latent manifold, while diffusion models reconstruct comparable boundaries through geometry-guided denoising. The consistency of these results across deterministic predictive models, invertible flows, and stochastic diffusion models suggests that symbolic boundaries arise from the environment's predictive structure rather than from architecture-specific inductive biases.
-
-Although the present study focuses on a single predictive agent, the resulting framework provides a foundation for exploring symbol emergence in multi-agent settings. If symbolic boundaries reflect predictive regimes, then agents interacting in the same environment may develop partially aligned segmentation patterns that can be negotiated or stabilized through communication. Understanding how such individually formed structures become shared symbolic systems is an important direction for future work and connects directly to broader theories of symbol emergence in cognitive and social systems.
-
-## Appendix
-
-### Mathematical Background (PCA and SVD)
-
-PCA can be interpreted geometrically as fitting an ellipsoid to the centered data cloud. Centering is 
-necessary because PCA assumes that the linear transformation acts around the origin; without 
-centering, the mean shift would be interpreted as variance.
-
-Given a centered data matrix X, PCA seeks directions v that maximize the projected variance:
-
-    maximize   vᵀ (Xᵀ X) v
-    subject to ||v|| = 1
-
-The solution is given by the eigenvectors of XᵀX, with the largest eigenvalue corresponding to the 
-first principal component.
-
-SVD provides an equivalent and more geometric interpretation. Any linear transformation maps the 
-unit circle into an ellipse whose axes correspond to the singular vectors. The first right singular 
-vector identifies the direction of maximal stretching, which is identical to the first principal 
-component. Thus, PCA can be computed directly via the SVD of the centered data matrix:
-
-    X = U Σ Vᵀ
-
-where the columns of V are the principal directions and the squared singular values Σ² correspond to 
-the explained variances.
-
-### Reproducibility and Implementation Notes
-
-The repository contains the code used to generate the figures and the corresponding training scripts. The default settings are summarized below for readers who want to reproduce or extend the experiments.
-
-| Item | Value (repository) | Notes |
-|---|---:|---|
-| Environment | 1D bouncing-ball (deterministic) | `data/generate_data.py` |
-| Latent dimension | 16 | Default CLI value; manuscript figures use `d_latent=8` |
-| Encoder | Linear(1,32) -> ReLU -> Linear(32, latent_dim) | `model/world_model.py::WorldModel` |
-| Decoder | Linear(latent_dim,32) -> ReLU -> Linear(32,1) | `model/world_model.py::WorldModel` |
-| Optimizer | Adam | Used across trainers |
-| Learning rate | 1e-3 | Default training rate in `model/train.py` |
-| Batch size | 32 (world), 128 (flow/diffusion) | Dispatcher defaults |
-| Epochs | 50 (world), 300 (flow), 1000 (diffusion) | Default epoch schedule |
-| Flow model | RealNVP, num_layers=8, hidden_dim=128 | Invertible baseline |
-| Diffusion model | timesteps=1000, hidden_dim=256, time_embed_dim=128 | Generative baseline |
-| PCA | `sklearn.decomposition.PCA(n_components=2)` | Latent-geometry summary |
-| Clustering | `KMeans(n_clusters=4, n_init=20, random_state=0)` | Symbolic segmentation |
-| Jacobian computation | autograd | See the subsection above |
-
-Example commands:
-
-```bash
-python -m pip install -r requirements.txt
-python model/train.py --mode world --latent-dim 8 --lr 1e-3 --batch-size 32 --epochs 50
-python model/train.py --mode flow --lr 5e-4 --batch-size 128 --epochs 300
-python model/train.py --mode diffusion --timesteps 1000 --lr 5e-4 --batch-size 128 --epochs 1000
-python model/eval.py --checkpoint model/checkpoint.pth --plot_dir figures/
+```text
+symbol-emergence-world-models/
+│
+├── model/                # World model, flow, diffusion
+├── analysis/             # PCA, Jacobian, clustering, state machine
+│   └── plots/            # Generated figures
+├── results/              # Latent, samples, model weights
+├── report/               # mini_report + final figures
+└── README.md
 ```
 
-Record the exact git commit hash and configuration file for each experiment. Where possible, save model checkpoints, training curves, and generated figures alongside the run metadata.
+---
 
-### Suggested Quantitative Evaluations and Additional Experiments
+## 3. Key Results
 
-The current analysis is primarily geometric and qualitative, so the next step is to report quantitative evidence that the segmentation is stable, boundary-aligned, and not specific to a particular random seed or clustering choice.
+### **Latent PCA**
+<p align="center">
+  <img src="report/figures/fig2_latent_pca.png" width="480">
+</p>
 
-Robustness and ablation experiments:
+Latent trajectories form **segmented linear regions**, suggesting discrete regimes.
 
-- Random-seed sensitivity: repeat training and analysis over multiple seeds and report mean ± standard deviation for each key metric.
-- Latent-dimension sweep: vary `d_latent` and measure whether PCA structure, boundary locations, and cluster transitions remain stable.
-- Cluster-number sweep: vary `k` in k-means and compare silhouette score, cluster occupancy balance, and transition stability.
-- Noise perturbation: add small observation noise or latent noise and test whether boundary locations and symbolic states persist.
-- Architecture ablations: replace ReLU with smoother activations, vary depth/width, or remove the bottleneck to test whether segmentation weakens.
-- Cross-model consistency: report the same metrics for the MLP, flow, and diffusion models to quantify model-independence rather than only visual similarity.
+---
 
-Recommended quantitative metrics:
+### **Jacobian Discontinuity**
+<p align="center">
+  <img src="report/figures/fig3_jacobian.png" width="480">
+</p>
 
-- Prediction or reconstruction error: report MSE over time for the world model, together with validation loss curves.
-- Explained variance ratio: report the variance explained by the first two PCA components as a summary of latent dimensionality.
-- Boundary alignment score: compute the temporal overlap between Jacobian peaks and physical collision events, for example using a tolerance window and reporting precision, recall, and F1.
-- Segmentation stability: compare cluster assignments across seeds using normalized mutual information (NMI), adjusted Rand index (ARI), or variation of information (VI).
-- Geometry alignment: report Procrustes distance between MLP and flow latent embeddings, and optionally between real and diffusion trajectories.
-- Cluster quality: report silhouette score and Davies-Bouldin index for the latent clusters.
-- Transition complexity: report transition entropy or the number of high-probability edges in the symbolic state graph.
-- Reproducibility spread: summarize each metric across seeds as mean ± std and, where useful, confidence intervals.
+Encoder Jacobian shows **sharp structural changes** at bounce events —  
+a mechanistic origin of symbolic boundaries.
 
-If a compact table is needed, the following layout is sufficient for the paper or supplement:
+---
 
-| Metric | What it measures | Why it matters |
-|---|---|---|
-| Prediction MSE | World-model fidelity | Confirms the latent representation is trained meaningfully |
-| PCA variance ratio | Global latent dimensionality | Shows whether the trajectory is low-dimensional |
-| Boundary F1 | Jacobian-event alignment | Tests whether sharp changes coincide with collisions |
-| NMI / ARI | Cluster stability across runs | Measures symbolic consistency under random initialization |
-| Silhouette score | Cluster separation | Quantifies how well the latent space partitions |
-| Procrustes distance | Cross-model geometry match | Quantifies model-independence |
-| Transition entropy | State-machine complexity | Summarizes how structured the symbolic dynamics are |
+### **Symbol Clusters & State Machine**
+<p align="center">
+  <img src="report/figures/fig4_symbol_clusters.png" width="420">
+  <img src="report/figures/fig5_state_machine.png" width="420">
+</p>
 
-These experiments would turn the present qualitative story into a stronger quantitative claim: the discovered symbolic segmentation is stable, event-aligned, and reproducible across seeds, architectural variants, and mild perturbations.
+Discrete symbolic states emerge naturally, forming a **predictive state-transition graph**.
 
+---
 
-## References
+### **Flow & Diffusion Dynamics**
+<p align="center">
+  <img src="report/figures/fig6_flow_geometry.png" width="420">
+  <img src="report/figures/fig7_diffusion_dynamics.png" width="420">
+</p>
 
-- Taniguchi, T., et al. (2026). *Symbol Emergence Systems: An Interdisciplinary Discussion About Cognition, Language and Society*. Springer.
-- Taniguchi, T., et al. (2016). *Symbol emergence in cognitive developmental systems: A survey*. IEEE Transactions on Cognitive and Developmental Systems.
-- Nakamura, T., et al. (2014). *Multimodal categorization and symbol emergence*. Advanced Robotics.
-- Ha, D., & Schmidhuber, J. (2018). *World Models*. arXiv:1803.10122.
-- Ho, J., Jain, A., & Abbeel, P. (2020). *Denoising Diffusion Probabilistic Models*. NeurIPS.
-- Dinh, L., Sohl-Dickstein, J., & Bengio, S. (2017). *Density estimation using Real NVP*. ICLR.
-- Arora, R., et al. (2018). *Understanding deep neural networks with rectified linear units*. ICLR.
-- MacQueen, J. (1967). *Some methods for classification and analysis of multivariate observations*. Berkeley Symposium.
+Both reversible (flow) and generative (diffusion) models preserve the same symbolic boundaries,  
+indicating **model-independent symbolic structure**.
+
+---
+
+## 4. Methods
+
+- **Environment:** 1D bouncing ball with deterministic physics  
+- **World Model:** encoder → transition → decoder  
+- **Flow Model:** RealNVP on latent space  
+- **Diffusion Model:** denoising latent dynamics  
+- **Analysis:** PCA, Jacobian, clustering, symbolic transition graph
+
+All code is modular and reproducible.
+
+## 5. Run
+
+Windows:
+
+```bat
+run.bat
+run.bat all
+scripts\run_all.bat
+```
+
+Or run individual stages:
+
+```bat
+run.bat world
+run.bat flow
+run.bat diffusion
+```
+
+---
+
+## 6. Toward Social Symbol Emergence
+
+This project focuses on **individual symbol emergence** —  
+how a single agent’s predictive dynamics produce symbolic boundaries.
+
+In future work, this framework can extend to **multi-agent systems**, where:
+- Agents share or negotiate symbolic categories  
+- Communication induces alignment  
+- Symbol systems emerge at the **societal level**
+
+This connects directly to ongoing research in **Symbol Emergence Systems**.
+
+---
+
+## 7. Citation
+
+A preprint is in preparation.  
+If you find this project useful, please cite or star the repository.
+
+---
+
+## 8. Contact
+
+**Xu Wenxuan**  
+Ningbo University of Technology  
+GitHub: https://github.com/bunxuan  
+Email: jyosa@nbut.edu.cn
