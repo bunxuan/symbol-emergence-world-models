@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 # 让我们能 import model/world_model.py
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,15 +60,38 @@ def compute_jacobian(
     print(f"Saved {save_jacobian}, shape = {jacobian.shape}")
 
     # 画热力图
-    plt.figure(figsize=(10, 4))
-    plt.imshow(jacobian.T, aspect="auto", cmap="bwr", interpolation="nearest")
-    plt.colorbar(label="d h_i / d x")
-    plt.xlabel("Time step")
-    plt.ylabel("Latent dimension")
-    plt.title("Jacobian of encoder(h) w.r.t input x")
+    fig, ax = plt.subplots(figsize=(10, 4), constrained_layout=True)
+    im = ax.imshow(jacobian.T, aspect="auto", cmap="bwr", interpolation="nearest")
+    cbar = fig.colorbar(im, ax=ax)
+    cbar.set_label("d h_i / d x")
+    ax.set_xlabel("Time step")
+    ax.set_ylabel("Latent dimension")
+    ax.set_title("Jacobian of encoder(h) w.r.t input x")
 
-    plt.tight_layout()
-    plt.savefig(save_fig, dpi=300)
+    # detect collisions from trajectory and overlay vertical lines
+    try:
+        traj = np.load(traj_path).squeeze()
+        vel = np.diff(traj)
+        coll_idx = np.where(np.sign(vel[:-1]) != np.sign(vel[1:]))[0] + 1
+        coll_idx = coll_idx[(coll_idx >= 0) & (coll_idx < jacobian.shape[0])]
+        for ci in coll_idx:
+            ax.axvline(ci, color="k", linestyle="--", linewidth=0.8, alpha=0.8)
+    except Exception:
+        coll_idx = np.array([])
+
+    # inset: summed absolute sensitivity around a representative collision
+    if coll_idx.size > 0:
+        first = coll_idx[0]
+        lo = max(0, first - 20)
+        hi = min(jacobian.shape[0], first + 21)
+        ax_in = inset_axes(ax, width="30%", height="35%", loc='upper right')
+        ax_in.plot(range(lo, hi), np.sum(np.abs(jacobian[lo:hi]), axis=1), "-o", markersize=3)
+        ax_in.set_title("Inset: |Jacobian| sum", fontsize=9)
+        ax_in.set_xlabel("time", fontsize=8)
+        ax_in.set_ylabel("sum |d h / d x|", fontsize=8)
+        ax_in.tick_params(axis="both", labelsize=7)
+
+    plt.savefig(save_fig, dpi=300, bbox_inches='tight')
     print(f"Saved {save_fig}")
 
 

@@ -1,0 +1,47 @@
+% Auto-generated LaTeX version of selected sections
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{booktabs}
+
+\title{Symbol Emergence from Predictive Dynamics in a 1D World Model}
+\author{Author Name(s)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Understanding how discrete symbolic structure can arise from continuous sensorimotor experience remains a central challenge in cognitive science and machine learning. Using a minimal one-dimensional bouncing-ball environment, we show that a predictive world model develops a latent trajectory that lies on a smooth manifold segmented by sharp transitions. These transitions align with changes in predictive regimes, and discontinuities in the encoder Jacobian provide a mechanistic marker of these boundaries.
+
+Combining latent-geometry analysis, Jacobian inspection, and clustering, we extract symbolic states whose transitions form a compact state machine summarizing the environment's dynamics. Crucially, similar segmentation patterns appear across multi-layer perceptrons (MLPs), invertible flow models, and diffusion models. Flows preserve the boundaries through topology-preserving transformations, while diffusion models reconstruct them through geometry-guided denoising. This cross-model consistency indicates that symbolic boundaries arise from the environment's predictive structure rather than architecture-specific inductive biases.
+
+This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone. For reproducibility, code and configuration files are available in \texttt{symbol-emergence-1d/model/} and we report representative settings in the Methods (seed=42; $d_{\mathrm{latent}}=8$; $N\approx20{,}000$ samples; KMeans $k=4$ unless otherwise noted).
+\end{abstract}
+
+\section{Introduction}
+Understanding how discrete symbolic structure can emerge from continuous sensorimotor experience is a central question in cognitive science and machine learning. Predictive world models provide a minimal setting in which such structure may arise: to forecast future states, the model must compress continuous dynamics into an internal representation that supports accurate prediction. This raises a fundamental question: what structure does a predictive model impose on its latent space, and how does this structure relate to the environment's dynamics?
+
+To investigate this question, we analyze the latent representations of a world model trained on a simple one-dimensional bouncing-ball environment. This environment offers a controlled testbed in which continuous motion is punctuated by discrete events, allowing us to isolate how predictive models respond to changes in dynamical regimes. Despite its simplicity, the setting captures the essential challenge of symbol emergence: continuous trajectories must be organized into discrete, behaviorally meaningful units.
+
+Our approach combines geometric, differential, and clustering-based analyses. PCA reveals the global organization of the latent trajectory, while the encoder Jacobian exposes local changes in sensitivity that provide a differential signature of regime transitions. Clustering the latent states further reveals discrete segments that correspond to qualitatively distinct phases of the environment's dynamics. Representative experimental settings used in the paper are: $d_{\mathrm{latent}}=8$, KMeans $k\in\{3,4,5\}$ (typical figures use $k=4$), and analysis sample size $N\approx20{,}000$ latent states (see Methods for full sweep and sensitivity checks).
+
+Across multiple architectures---including multi-layer perceptrons (MLPs), invertible flow models, and diffusion models---we observe a consistent pattern: the latent trajectory forms a smooth manifold segmented by sharp transitions aligned with event boundaries. These segments can be interpreted as symbolic states, and their transitions form a compact state machine that summarizes the predictive structure of the environment. The cross-model consistency suggests that the observed symbolic boundaries arise from the environment's predictive dynamics rather than architecture-specific inductive biases.
+
+This minimal framework allows us to examine how symbolic structure may emerge from prediction alone, without supervision or predefined categories. It also provides a mechanistic foundation for extending symbol-emergence studies to richer environments and, ultimately, to multi-agent systems in which symbolic categories may be aligned, shared, or negotiated.
+
+\section{Related Work}
+Research on symbol emergence has explored how discrete categories arise from continuous sensorimotor experience. Taniguchi et~al. emphasize symbol emergence as a multi-layered process involving individual representation learning, multimodal categorization, and ultimately the formation of shared symbol systems within society. Nakamura and colleagues have further examined how agents acquire internal categories through interaction and prediction. Our work follows this tradition but isolates a more mechanistic question: how symbolic boundaries arise within the latent dynamics of a predictive model, even without multimodality or social interaction.
+
+Predictive world models provide a minimal setting for studying such emergence. Prior work on predictive coding and learned dynamics (e.g., Ha \& Schmidhuber's World Models) has shown that latent spaces often organize environmental structure, but these studies typically emphasize performance or compression rather than the geometry of the latent trajectory. In contrast, we analyze how predictive regimes shape the latent manifold itself, and how discrete symbolic states may arise from transitions between these regimes.
+
+Our approach is also related to representation-geometry and mechanistic-interpretability studies that use PCA, SVD, and Jacobian analysis to probe learned representations. Prior studies have examined curvature, linear regions, and activation patterns in neural networks, but have not connected these geometric features to symbol emergence. Jacobian discontinuities provide a direct mechanistic link between predictive dynamics and symbolic segmentation.
+
+Finally, our analysis draws on flow-based and diffusion-based generative models. Flow models provide invertible mappings that preserve structural boundaries, while diffusion models reconstruct trajectories through iterative denoising. By showing that both models preserve similar segmentation patterns, we argue that the observed symbolic boundaries are driven by the environment's dynamics rather than architectural artifacts.
+
+Together, these lines of work motivate our central claim: symbolic structure can emerge from predictive dynamics alone, and its boundaries can be identified through geometric and differential analysis of the latent space.
+
+\end{document}
