@@ -209,45 +209,6 @@ python model/eval.py --checkpoint model/checkpoint.pth --plot_dir figures/
 
 Record the exact git commit hash and configuration file for each experiment. Where possible, save model checkpoints, training curves, and generated figures alongside the run metadata.
 
-### Suggested Quantitative Evaluations and Additional Experiments
-
-The current analysis is primarily geometric and qualitative, so the next step is to report quantitative evidence that the segmentation is stable, boundary-aligned, and not specific to a particular random seed or clustering choice.
-
-Robustness and ablation experiments:
-
-- Random-seed sensitivity: repeat training and analysis over multiple seeds and report mean ± standard deviation for each key metric.
-- Latent-dimension sweep: vary `d_latent` and measure whether PCA structure, boundary locations, and cluster transitions remain stable.
-- Cluster-number sweep: vary `k` in k-means and compare silhouette score, cluster occupancy balance, and transition stability.
-- Noise perturbation: add small observation noise or latent noise and test whether boundary locations and symbolic states persist.
-- Architecture ablations: replace ReLU with smoother activations, vary depth/width, or remove the bottleneck to test whether segmentation weakens.
-- Cross-model consistency: report the same metrics for the MLP, flow, and diffusion models to quantify model-independence rather than only visual similarity.
-
-Recommended quantitative metrics:
-
-- Prediction or reconstruction error: report MSE over time for the world model, together with validation loss curves.
-- Explained variance ratio: report the variance explained by the first two PCA components as a summary of latent dimensionality.
-- Boundary alignment score: compute the temporal overlap between Jacobian peaks and physical collision events, for example using a tolerance window and reporting precision, recall, and F1.
-- Segmentation stability: compare cluster assignments across seeds using normalized mutual information (NMI), adjusted Rand index (ARI), or variation of information (VI).
-- Geometry alignment: report Procrustes distance between MLP and flow latent embeddings, and optionally between real and diffusion trajectories.
-- Cluster quality: report silhouette score and Davies-Bouldin index for the latent clusters.
-- Transition complexity: report transition entropy or the number of high-probability edges in the symbolic state graph.
-- Reproducibility spread: summarize each metric across seeds as mean ± std and, where useful, confidence intervals.
-
-If a compact table is needed, the following layout is sufficient for the paper or supplement:
-
-| Metric | What it measures | Why it matters |
-|---|---|---|
-| Prediction MSE | World-model fidelity | Confirms the latent representation is trained meaningfully |
-| PCA variance ratio | Global latent dimensionality | Shows whether the trajectory is low-dimensional |
-| Boundary F1 | Jacobian-event alignment | Tests whether sharp changes coincide with collisions |
-| NMI / ARI | Cluster stability across runs | Measures symbolic consistency under random initialization |
-| Silhouette score | Cluster separation | Quantifies how well the latent space partitions |
-| Procrustes distance | Cross-model geometry match | Quantifies model-independence |
-| Transition entropy | State-machine complexity | Summarizes how structured the symbolic dynamics are |
-
-These experiments would turn the present qualitative story into a stronger quantitative claim: the discovered symbolic segmentation is stable, event-aligned, and reproducible across seeds, architectural variants, and mild perturbations.
-
-
 ## References
 
 - Taniguchi, T., et al. (2026). *Symbol Emergence Systems: An Interdisciplinary Discussion About Cognition, Language and Society*. Springer.

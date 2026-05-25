@@ -31,7 +31,7 @@ Understanding how discrete symbolic structure can arise from continuous sensorim
 
 Combining latent-geometry analysis, Jacobian inspection, and clustering, we extract symbolic states whose transitions form a compact state-transition graph summarizing the environment's dynamics. Crucially, similar segmentation-like patterns and large-scale geometric trends appear across multi-layer perceptrons (MLPs) and invertible flow models; flows preserve boundaries through topology-preserving transformations. Diffusion models reproduce comparable large-scale geometric bends via geometry-guided denoising, though their reverse chains are stochastic and yield more dispersed trajectories. This cross-model consistency—qualified by stochastic differences—indicates that symbolic boundaries are primarily driven by the environment's predictive structure rather than architecture-specific inductive biases.
 
-This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone. For reproducibility, code and configuration files are available in \texttt{symbol-emergence-1d/model/}, and the Appendix summarizes the settings used in the paper (seed=42; \texttt{d\_latent=8}; $N\approx 20{,}000$ samples; KMeans \texttt{k=4} where not otherwise specified).
+This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone.
 
 \end{abstract}
 
@@ -239,7 +239,7 @@ component. Thus, PCA can be computed directly via the SVD of the centered data m
 where the columns of V are the principal directions and the squared singular values $\Sigma^{2}$ correspond to 
 the explained variances.
 
-\subsection{Reproducibility and Implementation Notes}
+\subsection{Implementation Notes}
 
 The repository contains the code used to generate the figures and the corresponding training scripts. The default settings are summarized below for readers who want to reproduce or extend the experiments.
 

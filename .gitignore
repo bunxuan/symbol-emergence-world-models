@@ -1,2 +1,24 @@
-report\temp.md
-report\1.txt
+report/temp.md
+report/1.txt
+# LaTeX and build artifacts (ignore generated files)
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.lot
+report/*.lof
+report/*.bbl
+report/*.blg
+report/*.synctex.gz
+report/*.fdb_latexmk
+report/*.fls
+report/*.nav
+report/*.snm
+report/*.pdf.bak
+# Ignore generated PDFs (uncomment if you want to keep PDFs in repo)
+# report/*.pdf
+
+# temp / intermediate folders
+report/intermediate/
+report/rep temp
+report/temp.md
