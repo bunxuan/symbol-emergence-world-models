@@ -1,7 +1,11 @@
 # Symbol Emergence in a 1D World Model
 
+This repository accompanies a mechanistic study on symbolic boundary formation in predictive world models.
+
 This repository explores how **discrete symbolic structure** can emerge from **continuous predictive dynamics** in a minimal one-dimensional environment.  
 The project provides a mechanistic analysis of how **latent geometry**, **Jacobian discontinuities**, and **transition structure** give rise to symbolic boundaries.
+
+Our main contribution is a mechanistic explanation of how symbolic boundaries arise from Jacobian discontinuities and predictive-regime transitions in a minimal 1D world model.
 
 ---
 
@@ -21,6 +25,15 @@ The full mechanistic analysis—including methods, results, figures, and referen
 The README provides a concise overview; the report contains the full technical details.
 
 ---
+
+## Why Symbolic Boundaries Emerge (Mechanistic View)
+
+- The latent trajectory segments because the world model must represent different predictive regimes with different local geometry.
+- The encoder Jacobian jumps when ReLU activation patterns change, which happens near collision-like regime transitions.
+- Those Jacobian jumps mark where the model's local sensitivity changes most sharply.
+- Symbolic boundaries appear when these local regime changes are stable enough to be clustered into discrete regions.
+- K-means turns the continuous latent manifold into a small set of symbolic states.
+- The resulting state sequence forms a compact transition graph that summarizes the environment's dynamics.
 
 ## Key Mechanistic Insights
 
@@ -44,6 +57,8 @@ The sequence of cluster assignments forms a **discrete symbolic state sequence**
 - **Flow models** preserve segmentation‑like boundaries because invertible maps cannot create or destroy topological structure.  
 - **Diffusion reverse chains** reproduce **similar large‑scale geometric bends**, though with stochastic dispersion.  
 Together, these results suggest that symbolic boundaries arise primarily from the **environment’s predictive structure**, not from a specific architecture.
+
+Because both flow and diffusion models reproduce similar geometric bends, the segmentation appears to be driven by the environment’s predictive structure rather than by architectural details.
 
 <p align="center">
   <img src="report/figures/fig1_pipeline.png" width="720">
@@ -159,6 +174,8 @@ Symbol systems emerge at the societal level
 ## 7. Citation
 A preprint is in preparation.
 If you find this project useful, please star the repository or cite the report.
+
+A full preprint is currently being finalized and will be released soon.
 
 ## 8. Contact
 Xu Wenxuan  
