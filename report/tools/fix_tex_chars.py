@@ -20,6 +20,9 @@ s = s.replace("    X = U \\Sigma V^{\\top}", "    $X = U \\Sigma V^{\\top}$")
 s = s.replace("\\Sigma^{2}", "$\\Sigma^{2}$")
 # Some leftover patterns like \texttt\{...\} -> \texttt{...}
 s = s.replace("\\texttt\\{", "\\texttt{").replace("\\}\)", "\\})")
+# Unescape any literal backslash-brace sequences produced earlier
+s = s.replace(r"\{", "{")
+s = s.replace(r"\}", "}")
 # write back
 p.write_text(s, encoding="utf8")
 print("fixed")

@@ -2,6 +2,19 @@ import re
 from pathlib import Path
 
 md = Path("mini_report.md").read_text(encoding="utf8")
+# Preprocess common HTML center link blocks and convert to LaTeX
+# Replace simple HTML center blocks with a LaTeX link (fallback if regex misses)
+if '<p align="center">' in md:
+    start = md.find('<p align="center">')
+    end = md.find("</p>", start)
+    if end != -1:
+        md = (
+            md[:start]
+            + "\\begin{center}\n\\vspace{-1em}\n\\href{../README.md}{Back to Project README}\n\\end{center}\n"
+            + md[end + 4 :]
+        )
+# (Do not pre-convert underscores globally — handle emphasis per-line to avoid
+# changing image filenames and code snippets.)
 lines = md.splitlines()
 # extract title (first H1)
 title = "Document"
@@ -76,14 +89,17 @@ for i, ln in enumerate(lines):
     ln2 = re.sub(
         r"`([^`]*)`", lambda m: "\\texttt{" + m.group(1).replace("\\", "\\\\") + "}", ln
     )
-    # escape TeX special chars
-    ln2 = ln2.replace("%", "\\%").replace("#", "\\#").replace("&", "\\&")
-    ln2 = (
-        ln2.replace("_", "\\_")
-        .replace("{", "\\{")
-        .replace("}", "\\}")
-        .replace("$", "\\$")
-    )
+    # handle simple emphasis (but only in normal text, not in LaTeX commands)
+    if not ln2.lstrip().startswith("\\"):
+        ln2 = re.sub(r"_(.*?)_", r"\\emph{\1}", ln2)
+        # escape TeX special chars
+        ln2 = ln2.replace("%", "\\%").replace("#", "\\#").replace("&", "\\&")
+        ln2 = (
+            ln2.replace("_", "\\_")
+            .replace("{", "\\{")
+            .replace("}", "\\}")
+            .replace("$", "\\$")
+        )
     out_lines.append(ln2)
 
 preamble = (

@@ -15,14 +15,14 @@ Understanding how discrete symbolic structure can arise from continuous sensorim
 
 Combining latent-geometry analysis, Jacobian inspection, and clustering, we extract symbolic states whose transitions form a compact state-transition graph summarizing the environment's dynamics. Crucially, similar segmentation-like patterns and large-scale geometric trends appear across multi-layer perceptrons (MLPs) and invertible flow models; flows preserve boundaries through topology-preserving transformations. Diffusion models reproduce comparable large-scale geometric bends via geometry-guided denoising, though their reverse chains are stochastic and yield more dispersed trajectories. This cross-model consistency—qualified by stochastic differences—indicates that symbolic boundaries are primarily driven by the environment's predictive structure rather than architecture-specific inductive biases.
 
-This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone. For reproducibility, code and configuration files are available in `symbol-emergence-1d/model/`, and the Appendix summarizes the settings used in the paper (seed=42; `d_latent=8`; N≈20,000 samples; KMeans `k=4` where not otherwise specified).
+This minimal setting exposes a core mechanism by which symbolic categories can emerge from prediction alone. For reproducibility, code and configuration files are available in `symbol-emergence-1d/model/`, and the Appendix summarizes the repository-consistent settings used in the paper (seed=42; default `latent_dim=16`; `N=999` latent states in the released figures; KMeans `k=4` where not otherwise specified).
 
 ## 1. Introduction
 Understanding how discrete symbolic structure can emerge from continuous sensorimotor experience is a central question in cognitive science and machine learning. Predictive world models provide a minimal setting in which such structure may arise: to forecast future states, the model must compress continuous dynamics into an internal representation that supports accurate prediction. This raises a fundamental question: what structure does a predictive model impose on its latent space, and how does this structure relate to the environment's dynamics?
 
 To investigate this question, we analyze the latent representations of a world model trained on a simple one-dimensional bouncing-ball environment. This environment offers a controlled testbed in which continuous motion is punctuated by discrete events, allowing us to isolate how predictive models respond to changes in dynamical regimes. Despite its simplicity, the setting captures the essential challenge of symbol emergence: continuous trajectories must be organized into discrete, behaviorally meaningful units.
 
-Our approach combines geometric, differential, and clustering-based analyses. PCA reveals the global organization of the latent trajectory, while the encoder Jacobian exposes local changes in sensitivity that provide a differential signature of regime transitions. Clustering the latent states further reveals discrete segments that correspond to qualitatively distinct phases of the environment's dynamics. The reported experimental settings are `d_latent=8`, KMeans `k∈{3,4,5}` (typical figures use `k=4`), and analysis sample size `N≈20,000` latent states (see Appendix for the full sweep and sensitivity checks).
+Our approach combines geometric, differential, and clustering-based analyses. PCA reveals the global organization of the latent trajectory, while the encoder Jacobian exposes local changes in sensitivity that provide a differential signature of regime transitions. Clustering the latent states further reveals discrete segments that correspond to qualitatively distinct phases of the environment's dynamics. The repository-consistent experimental settings are default `latent_dim=16`, KMeans `k=4`, and analysis sample size `N=999` latent states in the released figures (see Appendix for the implementation details).
 
 
 Across multiple architectures - including multi-layer perceptrons (MLPs), invertible flow models, and diffusion models - we observe a consistent pattern: the latent trajectory forms a smooth manifold segmented by sharp transitions aligned with event boundaries. These segments can be interpreted as symbolic states, and their transitions form a compact state-transition graph that summarizes the predictive structure of the environment. The cross-model consistency suggests that the observed symbolic boundaries arise from the environment's predictive dynamics rather than architecture-specific inductive biases.
@@ -177,14 +177,14 @@ component. Thus, PCA can be computed directly via the SVD of the centered data m
 where the columns of V are the principal directions and the squared singular values Σ² correspond to 
 the explained variances.
 
-### Reproducibility and Implementation Notes
+### Implementation Notes
 
 The repository contains the code used to generate the figures and the corresponding training scripts. The default settings are summarized below for readers who want to reproduce or extend the experiments.
 
 | Item | Value (repository) | Notes |
 |---|---:|---|
 | Environment | 1D bouncing-ball (deterministic) | `data/generate_data.py` |
-| Latent dimension | 16 | Default CLI value; manuscript figures use `d_latent=8` |
+| Latent dimension | 16 | Default CLI value used by `model/train.py` |
 | Encoder | Linear(1,32) -> ReLU -> Linear(32, latent_dim) | `model/world_model.py::WorldModel` |
 | Decoder | Linear(latent_dim,32) -> ReLU -> Linear(32,1) | `model/world_model.py::WorldModel` |
 | Optimizer | Adam | Used across trainers |

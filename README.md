@@ -109,8 +109,8 @@ Discrete symbolic states emerge naturally, forming a predictive state‑transiti
 
 ### Flow & Diffusion Dynamics
 <p align="center">
-<img src="report/figures/fig6_flow_geometry.png" width="420">
-<img src="report/figures/fig7_diffusion_dynamics.png" width="420">
+<img src="report/figures/fig6a_flow_latent_segmentation.png" width="420">
+<img src="report/figures/fig7_diffusion_vs_real.png" width="420">
 </p>
 
 Flow models preserve segmentation‑like boundaries via invertible reparameterizations.
