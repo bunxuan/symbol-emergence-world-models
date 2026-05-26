@@ -1,11 +1,11 @@
 # Symbol Emergence in a 1D World Model
 
-This repository accompanies a mechanistic study on symbolic boundary formation in predictive world models.
+This repository accompanies a mechanistic study of symbolic boundary formation in predictive world models.
 
 This repository explores how **discrete symbolic structure** can emerge from **continuous predictive dynamics** in a minimal one-dimensional environment.  
-The project provides a mechanistic analysis of how **latent geometry**, **Jacobian discontinuities**, and **transition structure** give rise to symbolic boundaries.
+The project presents a mechanistic analysis of how **latent geometry**, **Jacobian discontinuities**, and **transition structure** give rise to symbolic boundaries.
 
-Our main contribution is a mechanistic explanation of how symbolic boundaries arise from Jacobian discontinuities and predictive-regime transitions in a minimal 1D world model.
+The main contribution is a mechanistic explanation of how symbolic boundaries arise from Jacobian discontinuities and predictive-regime transitions in a minimal 1D world model.
 
 ---
 
@@ -28,12 +28,25 @@ The README provides a concise overview; the report contains the full technical d
 
 ## Why Symbolic Boundaries Emerge (Mechanistic View)
 
+The following points summarize the core mechanistic findings.
+
 - The latent trajectory segments because the world model must represent different predictive regimes with different local geometry.
 - The encoder Jacobian jumps when ReLU activation patterns change, which happens near collision-like regime transitions.
 - Those Jacobian jumps mark where the model's local sensitivity changes most sharply.
 - Symbolic boundaries appear when these local regime changes are stable enough to be clustered into discrete regions.
 - K-means turns the continuous latent manifold into a small set of symbolic states.
 - The resulting state sequence forms a compact transition graph that summarizes the environment's dynamics.
+
+## Creative Informatics Relevance
+
+This section outlines how the mechanistic findings relate to Creative Informatics themes.
+
+- Symbolic boundaries as world structure
+- Jacobian discontinuities as event-driven segmentation
+- Latent piecewise geometry as world rules
+- Potential applications: NPC logic, town systems, exploration dynamics
+
+---
 
 ## Key Mechanistic Insights
 
@@ -47,28 +60,34 @@ The world model compresses continuous dynamics into a structured trajectory.
 Because the encoder is piecewise linear, changes in ReLU activation patterns produce **sharp Jacobian jumps**.  
 These jumps align with physical event boundaries (wall collisions), providing a mechanistic marker of symbolic segmentation.
 
+Jacobian jumps mark event-driven segmentation.
+
 ### • Symbol Clustering  
 K‑means discretizes the latent manifold into **phase‑like segments**, each corresponding to a distinct predictive regime.
+
+Clustering turns geometry into symbolic states.
 
 ### • Symbolic State Machine  
 The sequence of cluster assignments forms a **discrete symbolic state sequence**, which induces a compact **state‑transition graph** summarizing predictive dynamics.
 
+The state sequence forms a compact transition graph.
+
 ### • Model Robustness (Flow & Diffusion)  
 - **Flow models** preserve segmentation‑like boundaries because invertible maps cannot create or destroy topological structure.  
 - **Diffusion reverse chains** reproduce **similar large‑scale geometric bends**, though with stochastic dispersion.  
-Together, these results suggest that symbolic boundaries arise primarily from the **environment’s predictive structure**, not from a specific architecture.
-
-Because both flow and diffusion models reproduce similar geometric bends, the segmentation appears to be driven by the environment’s predictive structure rather than by architectural details.
+Taken together, these results suggest that symbolic boundaries arise primarily from the **environment’s predictive structure**, not from a specific architecture, and that both flow and diffusion models reproduce the same large-scale geometric trend.
 
 <p align="center">
-  <img src="report/figures/fig1_pipeline.png" width="720">
+  <img src="report/figures/pipeline/fig1_pipeline.png" width="600">
 </p>
+
+Pipeline overview: world model, latent geometry, clustering, and graph structure.
 
 ---
 
 ## 1. Overview
 
-We investigate the hypothesis:
+This study investigates the hypothesis:
 
 > **Symbolic boundaries arise when predictive dynamics undergo structural changes.**
 
@@ -79,6 +98,8 @@ Using a deterministic 1D bouncing‑ball environment, we observe:
 - These discontinuities align with **emergent symbolic states**  
 - Flow and diffusion models reveal **consistent geometric trends**  
 - A discrete **symbolic state machine** emerges from continuous dynamics
+
+These observations motivate a representation-level view of symbolic emergence.
 
 ---
 
@@ -101,37 +122,48 @@ symbol-emergence-world-models/
 
 ### Latent PCA
 <p align="center">
-<img src="report/figures/fig2_latent_pca.png" width="480">
+<img src="report/figures/latent/fig2_latent_pca.png" width="600">
 </p>
 
 Latent trajectories form segmented linear regions, indicating distinct predictive regimes.
 
+Latent PCA reveals segmented regimes.
+
 ### Jacobian Discontinuity
 <p align="center">
-<img src="report/figures/fig3_jacobian.png" width="480">
+<img src="report/figures/jacobian/fig3_jacobian.png" width="600">
 </p>
 
 Encoder Jacobian shows sharp structural changes at bounce events —
 a mechanistic origin of symbolic boundaries.
 
+Jacobian discontinuities align with collision events.
+
 ### Symbol Clusters & State Machine
 <p align="center">
-<img src="report/figures/fig4_symbol_clusters.png" width="420">
-<img src="report/figures/fig5_state_machine.png" width="420">
+<img src="report/figures/clustering/fig4_symbol_clusters.png" width="600">
+<img src="report/figures/clustering/fig5_state_machine.png" width="600">
 </p>
 
 Discrete symbolic states emerge naturally, forming a predictive state‑transition graph.
 
+Clustering turns the manifold into discrete symbolic states.
+
 ### Flow & Diffusion Dynamics
 <p align="center">
-<img src="report/figures/fig6a_flow_latent_segmentation.png" width="420">
-<img src="report/figures/fig7_diffusion_vs_real.png" width="420">
+<img src="report/figures/flow/fig6a_flow_latent_segmentation.png" width="600">
+<img src="report/figures/diffusion/fig7_diffusion_vs_real.png" width="600">
 </p>
 
 Flow models preserve segmentation‑like boundaries via invertible reparameterizations.
 Diffusion reverse chains reproduce similar geometric bends with stochastic dispersion.
 
+Flow and diffusion preserve the shared geometric trend.
+
+---
+
 ## 4. Methods (Brief)
+
 Environment: 1D bouncing ball (deterministic)
 
 World Model: encoder → transition → decoder
@@ -143,6 +175,8 @@ Diffusion Model: denoising latent dynamics
 Analysis: PCA, Jacobian, clustering, symbolic transition graph
 
 Full details are in the report.
+
+---
 
 ## 5. Run
 Windows:
@@ -162,14 +196,12 @@ run.bat diffusion
 ```
 
 ## 6. Toward Social Symbol Emergence
-This project focuses on individual symbol emergence.
-Future work will extend this framework to multi‑agent systems, where:
 
-Agents align or negotiate symbolic categories
+While this project focuses on individual symbol emergence, future work aims to extend this framework to multi‑agent systems where communication stabilizes shared symbolic categories.
 
-Communication stabilizes shared symbols
-
-Symbol systems emerge at the societal level
+- Agents align or negotiate symbolic categories.
+- Communication stabilizes shared symbols.
+- Symbol systems emerge at the societal level.
 
 ## 7. Citation
 A preprint is in preparation.
@@ -177,7 +209,11 @@ If you find this project useful, please star the repository or cite the report.
 
 A full preprint is currently being finalized and will be released soon.
 
+---
+
 ## 8. Contact
+For inquiries or collaboration, please contact:
+
 Xu Wenxuan  
 Ningbo University of Technology
 GitHub: https://github.com/bunxuan  
