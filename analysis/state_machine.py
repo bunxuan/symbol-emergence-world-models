@@ -3,11 +3,20 @@ from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
+from sklearn.metrics import mutual_info_score, normalized_mutual_info_score
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CLUSTER_PATH = PROJECT_ROOT / "analysis" / "clusters.npy"
 SAVE_TRANSITIONS = PROJECT_ROOT / "analysis" / "state_transitions.npy"
 SAVE_FIG = PROJECT_ROOT / "analysis" / "plots" / "state_machine.png"
+SAVE_MI_STATS = PROJECT_ROOT / "analysis" / "symbol_mutual_info.npz"
+SAVE_MI_FIG = (
+    PROJECT_ROOT
+    / "report"
+    / "figures"
+    / "entropy"
+    / "fig9c_symbol_mutual_information.png"
+)
 
 
 def build_state_machine(
@@ -18,6 +27,44 @@ def build_state_machine(
     labels = np.load(cluster_path)
     transitions = [(labels[i], labels[i + 1]) for i in range(len(labels) - 1)]
     transitions = np.array(transitions)
+    symbol_mi = float(mutual_info_score(labels[:-1], labels[1:]))
+    symbol_nmi = float(normalized_mutual_info_score(labels[:-1], labels[1:]))
+
+    SAVE_MI_STATS.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(
+        SAVE_MI_STATS,
+        mutual_information=symbol_mi,
+        normalized_mutual_information=symbol_nmi,
+    )
+    print(f"Saved {SAVE_MI_STATS}")
+
+    SAVE_MI_FIG.parent.mkdir(parents=True, exist_ok=True)
+    fig_mi, ax_mi = plt.subplots(figsize=(5.8, 4.0), constrained_layout=True)
+    metric_names = ["I(S_t;S_{t+1})", "NMI"]
+    metric_values = [symbol_mi, symbol_nmi]
+    metric_colors = ["#2563eb", "#d97706"]
+    ax_mi.bar(metric_names, metric_values, color=metric_colors, edgecolor="#1f2937")
+    ax_mi.set_ylabel("score")
+    ax_mi.set_title("Symbol mutual information")
+    ax_mi.set_ylim(0.0, max(1.0, max(metric_values) * 1.2))
+    ax_mi.grid(True, axis="y", alpha=0.25)
+    for idx, value in enumerate(metric_values):
+        ax_mi.text(
+            idx, value + 0.03, f"{value:.2f}", ha="center", va="bottom", fontsize=9
+        )
+    ax_mi.text(
+        0.02,
+        0.98,
+        "Discrete symbols retain predictive dependence\nbetween adjacent time steps.",
+        transform=ax_mi.transAxes,
+        ha="left",
+        va="top",
+        fontsize=9,
+        bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#cbd5e1", alpha=0.95),
+    )
+    fig_mi.savefig(SAVE_MI_FIG, dpi=300, bbox_inches="tight")
+    plt.close(fig_mi)
+    print(f"Saved {SAVE_MI_FIG}")
 
     np.save(save_transitions, transitions)
     print(f"Saved {save_transitions}")
@@ -106,7 +153,11 @@ def build_state_machine(
             draw_edge((u, v), rad, width, color, alpha=0.95)
             cross_edges.append((u, v, weight))
 
-    summary_lines = ["Cross-state transition counts"]
+    summary_lines = [
+        f"I(S_t; S_t+1) = {symbol_mi:.3f} nats",
+        f"NMI = {symbol_nmi:.3f}",
+        "Cross-state transition counts",
+    ]
     for u, v, weight in sorted(
         cross_edges, key=lambda item: (-item[2], item[0], item[1])
     ):

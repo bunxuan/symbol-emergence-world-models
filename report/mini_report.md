@@ -7,8 +7,10 @@ This work investigates how symbolic structure emerges from world dynamics, with 
 	</a>
 </p>
 
+
 # Symbol Emergence from Predictive Dynamics in a 1D World Model
-_A mechanistic study of how discrete symbolic structure arises from continuous latent dynamics_
+_A mechanistic study of how d
+iscrete symbolic structure arises from continuous latent dynamics_
 
 ---
 ## Abstract
@@ -129,26 +131,60 @@ Despite their architectural differences, the MLP and flow models exhibit closely
 
 Figure 8. Cross-model segmentation summary, highlighting the shared segmentation pattern across models (flow samples Procrustes-aligned; clustering k=4; N=999).
 
+## 4. Information-Theoretic Analysis
+
+The geometric results above can also be phrased in terms of uncertainty, compression, and predictive dependence. Because the world model is deterministic, the predictive entropy curve is estimated with a local Gaussian approximation to the one-step residuals: $\sigma_t^2 \approx \mathrm{Var}_w(x_{t+1} - \hat{x}_{t+1})$ and $H_t \approx \frac12 \log(2\pi e\sigma_t^2)$.
+
+### 4.1 Predictive Entropy Spike
+
+The predictive entropy proxy spikes near the same collision boundaries that produce the strongest Jacobian changes. In the one-dimensional bouncing-ball environment, these peaks are expected because the next observation becomes locally harder to predict when the trajectory switches from free motion to post-impact motion. The entropy curve therefore provides a complementary uncertainty view of the same regime boundaries identified by the Jacobian.
+
+![Figure 9a: Predictive entropy proxy and Jacobian norm.](figures/entropy/fig9a_predictive_entropy_spike.png)
+
+Figure 9a. Predictive entropy proxy and Jacobian norm over time. Both curves are standardized for comparison, and their peaks tend to align near collision-induced regime changes.
+
+### 4.2 Segment Entropy
+
+Segment entropy measures how concentrated each symbolic cluster is in latent space. We estimate $H(Z \mid S = k)$ for every cluster with a diagonal Gaussian approximation on the latent vectors assigned to that cluster, then average them to obtain $H(Z \mid S)$. Lower within-cluster entropy means each symbolic state occupies a tighter region of the latent manifold, while the gap $H(Z) - H(Z \mid S)$ measures how much structure the segmentation explains.
+
+![Figure 9b: Segment internal entropy across symbolic clusters.](figures/entropy/fig9b_segment_entropy.png)
+
+Figure 9b. Segment internal entropy in the clustered latent space. The global entropy line sits above the weighted conditional entropy when the partition captures meaningful latent structure.
+
+### 4.3 Mutual Information of Symbols
+
+The state machine exposes temporal dependence between symbolic states. We measure discrete mutual information between consecutive symbols, $I(S_t; S_{t+1})$, and also report normalized mutual information for scale comparison. Higher values indicate that the symbolic sequence retains predictive memory rather than behaving like a memoryless partition.
+
+![Figure 9c: Mutual information of consecutive symbols.](figures/entropy/fig9c_symbol_mutual_information.png)
+
+Figure 9c. Mutual information summary for the symbolic state sequence. The discrete symbols retain nontrivial predictive dependence across adjacent time steps.
+
+### 4.4 Theoretical Lower Bound
+
+The symbolic metrics above are conservative because clustering is a coarse-graining map, $S = q(Z)$. By the data processing inequality, the measured symbolic mutual information satisfies $I(S_t; S_{t+1}) \le I(Z_t; Z_{t+1})$, so the discrete FSM gives a lower bound on the predictive information present in the continuous latent trajectory. Equivalently, the entropy gap $H(Z) - H(Z \mid S)$ is the amount of latent structure captured by the symbol partition, while the predictive entropy proxy marks where that structure is hardest to forecast.
+
+Taken together, the entropy spike, the segment-entropy gap, and the symbolic mutual information provide a consistent lower-bound view of the same regime transitions that appear geometrically in the latent manifold.
+
 ---
 
-## 4. Discussion
+## 5. Discussion
 
-### 4.1 Predictive Latent Geometry
+### 5.1 Predictive Latent Geometry
 
 The latent manifold reveals how predictive structure shapes representation geometry.
 The PCA results suggest that the learned latent trajectory does not form an unstructured cloud, but instead lies on a low-dimensional manifold with piecewise-smooth geometry. In the one-dimensional bouncing-ball environment, the underlying dynamics are simple but not uniform: free motion, boundary approach, and post-collision motion correspond to different predictive situations. The world model must compress these situations into a representation that supports forecasting, and that compression appears to organize the latent space into connected regions with directional changes rather than a single globally smooth curve. This geometry matters because it suggests that predictive dynamics do not merely produce a compact representation; they also induce structure in that representation. In other words, the latent manifold is shaped by the requirements of prediction itself. Such a piecewise-smooth structure is a natural substrate for symbol emergence, because discrete symbolic categories can be defined as stable partitions of a continuous predictive manifold.
 
-### 4.2 Mechanism of Symbolic Boundaries
+### 5.2 Mechanism of Symbolic Boundaries
 
 Jacobian discontinuities provide the local signature of regime transitions.
 The local mechanism behind these boundaries is the switching of ReLU activation patterns in the encoder. Because the encoder is piecewise linear, each change in activation pattern induces a new local linearization, which appears in the Jacobian as a jump or sharp change. In this setting, the Jacobian is not just a descriptive diagnostic; it marks transitions between predictive regimes. When the system approaches a collision, the model must switch from one prediction strategy to another, and that regime switching is reflected as a discontinuity in sensitivity to the input. This is why the Jacobian peaks are aligned with event boundaries in the trajectory. At the mechanistic level, a predictive regime is therefore not just a mode of behavior in the environment, but a mode of representation in the model. The correspondence between regime switching and Jacobian discontinuity is the strongest evidence in this study that symbolic boundaries can emerge from model internals rather than being imposed externally. In this sense, the boundary is "symbolic" because it separates distinct predictive organizations, and it is mechanistic because the separation is realized by a change in the encoder's local linear geometry.
 
-### 4.3 From Manifold to Discrete Symbols
+### 5.3 From Manifold to Discrete Symbols
 
 Clustering turns continuous geometry into a finite symbolic alphabet.
 Once the latent geometry is segmented, k-means provides a simple way to discretize the continuous manifold into a finite set of clusters. Each cluster can be interpreted as a symbolic state: not a ground-truth label of the environment, but a stable region of the predictive latent space. The transition structure among these clusters then yields a state-transition graph, which captures how the representation moves from one predictive regime to another over time. This is the essential symbolic step in the analysis: a continuous trajectory becomes a discrete sequence of states, and the sequence can be summarized as a state-transition graph. The value of this construction is not merely visual; it shows how symbol-like categories can emerge from geometry without explicit supervision. The clustering step turns a smooth predictive manifold into a finite symbolic alphabet, and the state-transition graph turns that alphabet into structured dynamics while preserving temporal order.
 
-### 4.4 Model-Independent Structure
+### 5.4 Model-Independent Structure
 
 Together, these results indicate that segmentation is driven by environment-induced structure rather than architecture-specific details.
 The comparison across MLP, flow, and diffusion models is the strongest test of whether the observed segmentation is architecture-specific or environment-driven. For the flow model, invertibility is crucial. A flow such as RealNVP transforms latent coordinates through a sequence of bijective maps, which means it can reshape the manifold but cannot merge two distinct regions into one or create a new boundary that was not already present in the learned representation. Topology is preserved, so segmentation can be expressed in a new coordinate system but not fundamentally destroyed. This is why flow latent segmentation aligns with the MLP segmentation, and why the Procrustes comparison reveals near-identical geometry. The flow Jacobian time series further supports this view: the same event-related changes appear in the transformed latent space, indicating that the boundary structure survives the invertible mapping.
@@ -159,7 +195,7 @@ Because both flow and diffusion models reproduce similar geometric bends, the se
 
 Taken together, these results support a unified explanation: predictive regimes impose latent geometry, geometry induces segmentation, and segmentation gives rise to symbolic boundaries. This chain does not depend on a particular architecture. Instead, it appears across deterministic predictive models, invertible flows, and stochastic diffusion models because all of them must represent the same environment-induced structure. The architectural differences change how the structure is expressed, but not whether it appears. That is the core sense in which the observed symbolic boundaries are model-independent.
 
-### 4.5 Toward Social Symbol Emergence
+### 5.5 Toward Social Symbol Emergence
 
 While this study focuses on a single predictive agent, the resulting structure suggests a natural path toward multi-agent symbol systems. If symbolic boundaries reflect predictive regimes, then agents in the same environment may develop partially aligned segmentation patterns that can be negotiated or stabilized through communication.
 
