@@ -24,7 +24,7 @@ if /I "%~1"=="--help" goto :usage
 exit /b %ERRORLEVEL%
 
 :usage
-echo Usage: run.bat [world^|flow^|diffusion^|all]
+echo Usage: run.bat [world^|flow^|diffusion^|gridworld^|2d^|all]
 echo.
 echo Examples:
 echo   run.bat
@@ -32,4 +32,6 @@ echo   run.bat all
 echo   run.bat world
 echo   run.bat flow
 echo   run.bat diffusion
+echo   run.bat gridworld
+echo   run.bat 2d
 exit /b 0

@@ -6,7 +6,8 @@ import networkx as nx
 from sklearn.metrics import mutual_info_score, normalized_mutual_info_score
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CLUSTER_PATH = PROJECT_ROOT / "analysis" / "clusters.npy"
+
+CLUSTER_PATH = PROJECT_ROOT / "analysis" / "data" / "clusters.npy"
 SAVE_TRANSITIONS = PROJECT_ROOT / "analysis" / "state_transitions.npy"
 SAVE_FIG = PROJECT_ROOT / "analysis" / "plots" / "state_machine.png"
 SAVE_MI_STATS = PROJECT_ROOT / "analysis" / "symbol_mutual_info.npz"

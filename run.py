@@ -38,13 +38,38 @@ def run_diffusion_pipeline() -> None:
     run_script(PROJECT_ROOT / "analysis" / "diffusion_figures.py")
 
 
+def run_gridworld_pipeline() -> None:
+    # 1) collect raw 2D states/actions
+    run_script(PROJECT_ROOT / "envs" / "collect_2d.py")
+    # 2) train the shared world model with state_dim=2
+    run_script(
+        PROJECT_ROOT / "model" / "train.py",
+        "--mode",
+        "world",
+        "--data-path",
+        "data/trajectories_2d.npy",
+        "--state-dim",
+        "2",
+        "--epochs",
+        "20",
+        "--batch-size",
+        "32",
+        "--latent-dim",
+        "16",
+    )
+    # 3) compute Jacobian / entropy / clustering / MI figures
+    run_script(PROJECT_ROOT / "analysis" / "run_analysis.py")
+    # 4) render the spatial segmentation map
+    run_script(PROJECT_ROOT / "analysis" / "segmentation.py")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run the symbol emergence pipeline.")
     parser.add_argument(
         "mode",
         nargs="?",
         default="world",
-        choices=["world", "flow", "diffusion", "all"],
+        choices=["world", "flow", "diffusion", "gridworld", "2d", "all"],
     )
     args = parser.parse_args()
 
@@ -54,6 +79,8 @@ def main() -> None:
         run_flow_pipeline()
     elif args.mode == "diffusion":
         run_diffusion_pipeline()
+    elif args.mode in {"gridworld", "2d"}:
+        run_gridworld_pipeline()
     else:
         run_world_pipeline()
         run_flow_pipeline()

@@ -1,5 +1,5 @@
-report/temp.md
-report/1.txt
+report/intermediate/notes/temp.md
+report/intermediate/notes/1.txt
 # LaTeX and build artifacts (ignore generated files)
 report/*.aux
 report/*.log
@@ -21,4 +21,3 @@ report/*.pdf.bak
 # temp / intermediate folders
 report/intermediate/
 report/rep temp
-report/temp.md

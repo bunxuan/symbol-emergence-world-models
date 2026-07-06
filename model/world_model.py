@@ -23,11 +23,11 @@ def build_mlp(
 
 
 class WorldModel(nn.Module):
-    def __init__(self, latent_dim=16):
+    def __init__(self, state_dim=1, latent_dim=16):
         super().__init__()
 
         self.encoder = nn.Sequential(
-            nn.Linear(1, 32),
+            nn.Linear(state_dim, 32),
             nn.ReLU(),
             nn.Linear(32, latent_dim),
         )
@@ -35,18 +35,24 @@ class WorldModel(nn.Module):
         self.decoder = nn.Sequential(
             nn.Linear(latent_dim, 32),
             nn.ReLU(),
-            nn.Linear(32, 1),
+            nn.Linear(32, state_dim),
         )
+
+    def encode(self, x):
+        return self.encoder(x)
+
+    def decode(self, h):
+        return self.decoder(h)
 
     def forward(self, x):
         """
-        x: shape (batch, 1)
+        x: shape (batch, state_dim)
         returns:
             pred: predicted next x
             h: latent representation
         """
-        h = self.encoder(x)
-        pred = self.decoder(h)
+        h = self.encode(x)
+        pred = self.decode(h)
         return pred, h
 
 

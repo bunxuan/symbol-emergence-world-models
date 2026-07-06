@@ -47,12 +47,22 @@ def _load_latent_array(latent_path=LATENT_PATH):
 
 def train_world_model(
     data_path=DATA_PATH,
+    state_dim=None,
     latent_dim=16,
     epochs=50,
     batch_size=32,
     lr=1e-3,
 ):
-    traj = np.load(data_path).astype(np.float32)  # shape (T, 1)
+    traj = np.load(data_path).astype(np.float32)
+    if traj.ndim == 1:
+        traj = traj[:, None]
+    if state_dim is None:
+        state_dim = traj.shape[1]
+    elif traj.shape[1] != state_dim:
+        raise ValueError(
+            f"state_dim={state_dim} does not match trajectory shape {traj.shape}"
+        )
+
     x = torch.from_numpy(traj[:-1])
     y = torch.from_numpy(traj[1:])
 
@@ -60,7 +70,7 @@ def train_world_model(
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
     device = _device()
-    model = WorldModel(latent_dim=latent_dim).to(device)
+    model = WorldModel(state_dim=state_dim, latent_dim=latent_dim).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     loss_fn = nn.MSELoss()
 
@@ -114,7 +124,7 @@ def train_flow(
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-    model.train()   
+    model.train()
     for epoch in range(epochs):
         total_loss = 0.0
         for (batch_h,) in loader:
@@ -218,6 +228,8 @@ def parse_args():
     parser.add_argument("--batch-size", type=int, default=None)
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--latent-dim", type=int, default=16)
+    parser.add_argument("--state-dim", type=int, default=None)
+    parser.add_argument("--data-path", type=Path, default=DATA_PATH)
     parser.add_argument("--timesteps", type=int, default=1000)
     return parser.parse_args()
 
@@ -227,6 +239,8 @@ def main():
 
     if args.mode == "world":
         train_world_model(
+            data_path=args.data_path,
+            state_dim=args.state_dim,
             latent_dim=args.latent_dim,
             epochs=args.epochs or DEFAULT_EPOCHS["world"],
             batch_size=args.batch_size or 32,

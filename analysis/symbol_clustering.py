@@ -8,9 +8,9 @@ from sklearn.cluster import KMeans
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 LATENT_PATH = PROJECT_ROOT / "model" / "latent.npy"
-SAVE_CLUSTERS = PROJECT_ROOT / "analysis" / "clusters.npy"
+SAVE_CLUSTERS = PROJECT_ROOT / "analysis" / "data" / "clusters.npy"
 SAVE_FIG = PROJECT_ROOT / "analysis" / "plots" / "symbol_clusters.png"
-SAVE_SEGMENT_ENTROPY = PROJECT_ROOT / "analysis" / "segment_entropy.npz"
+SAVE_SEGMENT_ENTROPY = PROJECT_ROOT / "analysis" / "data" / "segment_entropy.npz"
 SAVE_SEGMENT_ENTROPY_FIG = (
     PROJECT_ROOT / "report" / "figures" / "entropy" / "fig9b_segment_entropy.png"
 )

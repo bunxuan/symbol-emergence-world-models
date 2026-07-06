@@ -24,6 +24,8 @@ The full mechanistic analysis—including methods, results, figures, and referen
 
 The README provides a concise overview; the report contains the full technical details.
 
+For a map of the report folder itself, see [report/README.md](report/README.md).
+
 ---
 
 ## Why Symbolic Boundaries Emerge (Mechanistic View)
@@ -194,6 +196,27 @@ run.bat world
 run.bat flow
 run.bat diffusion
 ```
+
+### 2D GridWorld Update
+
+The 2D spatial-analysis update is now available as a one-key workflow:
+
+```bat
+run.bat gridworld
+```
+
+You can also invoke the underlying steps directly:
+
+```bat
+python envs/collect_2d.py
+python model/train.py --mode world --data-path data/trajectories_2d.npy --state-dim 2 --epochs 20 --batch-size 32 --latent-dim 16
+python analysis/run_analysis.py
+python analysis/segmentation.py
+```
+
+This generates the 2D Jacobian norm map, predictive entropy map, symbolic cluster map, and symbol MI matrix under `report/figures/gridworld/`.
+
+For a code-reading guide that traces the full path from raw rollout to figures, see [report/2d_section.md](report/2d_section.md).
 
 ## 6. Toward Social Symbol Emergence
 
