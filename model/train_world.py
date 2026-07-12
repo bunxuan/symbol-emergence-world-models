@@ -7,5 +7,6 @@ def main() -> None:
     train_world_model()
 
 
-if __name__ == "__main__":
-    main()
+    if __name__ == "__main__":
+        main()
+                 

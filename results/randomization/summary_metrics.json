@@ -1,0 +1,26 @@
+[
+  {
+    "ratio": 0.0,
+    "dataset_path": "data/randomization/dataset_original/trajectories.npy",
+    "prediction_mse": 0.0009226290276274085,
+    "mean_entropy": -2.1094281673431396,
+    "mean_jacobian_norm": 2.362621784210205,
+    "adjacent_symbol_mi": 1.0461160373585208
+  },
+  {
+    "ratio": 20.0,
+    "dataset_path": "data/randomization/dataset_random/trajectories_shuffle_20.npy",
+    "prediction_mse": 0.04981305077672005,
+    "mean_entropy": -0.17972718179225922,
+    "mean_jacobian_norm": 1.8879896402359009,
+    "adjacent_symbol_mi": 0.4229047793388434
+  },
+  {
+    "ratio": 100.0,
+    "dataset_path": "data/randomization/dataset_random/trajectories_shuffle_100.npy",
+    "prediction_mse": 0.08413665741682053,
+    "mean_entropy": 0.166315957903862,
+    "mean_jacobian_norm": 1.1526463031768799,
+    "adjacent_symbol_mi": 0.00436835199724292
+  }
+]

@@ -195,6 +195,7 @@ Or run individual stages:
 run.bat world
 run.bat flow
 run.bat diffusion
+run.bat randomization
 ```
 
 ### 2D GridWorld Update
@@ -217,6 +218,21 @@ python analysis/segmentation.py
 This generates the 2D Jacobian norm map, predictive entropy map, symbolic cluster map, and symbol MI matrix under `report/figures/gridworld/`.
 
 For a code-reading guide that traces the full path from raw rollout to figures, see [report/2d_section.md](report/2d_section.md).
+
+### Randomization Control Study
+
+To test whether symbol emergence depends on meaningful trajectory structure, run:
+
+```bat
+run.bat randomization
+```
+
+This keeps the model, loss, and analysis settings fixed, and only changes trajectory order at noise ratios `0%, 20%, 100%`. Outputs are saved under `results/randomization/`, including:
+
+- per-ratio latent/PCA/entropy/Jacobian/MI artifacts
+- `results/randomization/figures/randomization_metric_trends.png`
+- `results/randomization/figures/original_vs_100_shuffled_pca.png`
+- `results/randomization/summary_metrics.json`
 
 ## 6. Toward Social Symbol Emergence
 
