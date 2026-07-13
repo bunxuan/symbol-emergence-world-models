@@ -11,6 +11,11 @@ This work investigates how symbolic structure emerges from world dynamics.
 # Symbol Emergence from Predictive Dynamics in a 1D World Model
 _A mechanistic study of how discrete symbolic structure arises from continuous latent dynamics_
 
+**Wenxuan Xu**  
+Ningbo University of Technology  
+Email: jyosa@nbut.edu.cn  
+July 2026
+
 ---
 ## Abstract
 
@@ -55,7 +60,7 @@ Finally, our analysis draws on flow-based and diffusion-based generative models.
 
 ### 3.1 Training Procedure
 
-The world model is trained by gradient-based optimization to minimize prediction loss.
+The world model is trained by gradient-based optimization to minimize the mean squared error between the predicted next state and the true next state. Training hyperparameters are provided in the Appendix.
 
 ### 3.2 Environment
 
@@ -63,7 +68,7 @@ We use a deterministic one-dimensional bouncing-ball environment in which the ag
 
 ### 3.3 World Model
 
-The world model combines an encoder and decoder in a low-dimensional latent space, and it is trained to reconstruct observations while forecasting the next step.
+The world model combines an encoder and a decoder in a low-dimensional latent space. The encoder maps the current observation to a latent vector, and the decoder reconstructs the observation while also predicting the next latent state. The model is trained to reconstruct the current observation and to forecast the next observation.
 
 ### 3.4 Flow Model
 
@@ -76,6 +81,12 @@ A denoising diffusion model is trained on latent trajectories to study the gener
 ### 3.6 Analysis Pipeline
 
 We analyze latent geometry with PCA, detect local structural changes with encoder Jacobians, cluster latent states into symbolic categories, and construct the induced state-transition graph.
+
+In addition to geometric measures, we compute several information-theoretic quantities. Predictive entropy is approximated from the variance of the one-step prediction residual within a sliding window, assuming a Gaussian distribution under the maximum-entropy principle. Segment entropy is estimated by fitting a diagonal Gaussian to the latent vectors within each cluster, and mutual information between consecutive symbols is computed from the empirical symbol transition matrix. All these quantities are described in detail in Section 5.
+
+### 3.7 Randomization Control
+
+To test whether the observed symbolic structure depends on temporal coherence, we construct shuffled versions of the original trajectory. For a given shuffle ratio \(r\), we randomly permute the temporal order of \(r \times 100\%\) of the trajectory frames while keeping the set of states unchanged. Three ratios are used: 0% (original order), 20% (partial disruption), and 100% (fully shuffled). The world model is then retrained from scratch on each shuffled dataset using exactly the same architecture, hyperparameters, and random seed as the original experiment. The analysis pipeline from Section 3.6 is subsequently applied without modification.
 
 ## 4. Results
 
@@ -128,117 +139,57 @@ Together, these results show that segmentation is preserved under both invertibl
 ![Cross-model segmentation summary](figures/jacobian/pipeline/fig8_segmentation_overlay.png)
 **Figure 8.** Cross-model segmentation summary, highlighting the shared segmentation pattern across models (flow samples Procrustes-aligned; clustering k=4; N=999).
 
-## 5. Information-Theoretic Analysis
+---
 
-The geometric results above can also be phrased in terms of uncertainty, compression, and predictive dependence. Because the world model is deterministic, the predictive entropy curve is estimated with a local Gaussian approximation to the one-step residuals: $\sigma_t^2 \approx \mathrm{Var}_w(x_{t+1} - \hat{x}_{t+1})$ and $H_t \approx \frac12 \log(2\pi e\sigma_t^2)$.
+## 5. Discussion
 
-### 5.1 Predictive Entropy Spike
+### 5.1 Predictive Latent Geometry
 
-The predictive entropy proxy spikes near the same collision boundaries that produce the strongest Jacobian changes. In the one-dimensional bouncing-ball environment, these peaks are expected because the next observation becomes locally harder to predict when the trajectory switches from free motion to post-impact motion. The entropy curve therefore provides a complementary uncertainty view of the same regime boundaries identified by the Jacobian.
+The PCA results suggest that the learned latent trajectory does not form an unstructured cloud, but lies on a low‑dimensional manifold with piecewise‑smooth geometry. In the bouncing‑ball environment, free motion, boundary approach, and post‑collision motion correspond to different predictive situations. The world model compresses these situations into a representation that supports forecasting, and that compression organizes the latent space into connected regions with directional changes rather than a single globally smooth curve. This geometry suggests that predictive dynamics not only produce a compact representation, but also induce structure in that representation. A piecewise‑smooth manifold thus becomes a natural substrate for symbol emergence: discrete symbolic categories can be defined as stable partitions of a continuous predictive manifold.
+
+### 5.2 Mechanism of Symbolic Boundaries
+
+The local mechanism behind these boundaries is the switching of ReLU activation patterns in the encoder. Because the encoder is piecewise linear, each change in activation pattern induces a new local linearization, which appears in the Jacobian as a jump or sharp change. The Jacobian therefore marks transitions between predictive regimes. When the system approaches a collision, the model must switch prediction strategies, and that regime switching is reflected as a discontinuity in sensitivity to the input. At the mechanistic level, a predictive regime is a mode of representation in the model. The correspondence between regime switching and Jacobian discontinuity provides evidence that symbolic boundaries may arise from internal predictive dynamics rather than being externally imposed. The boundary is “symbolic” because it separates distinct predictive organizations, and it is mechanistic because the separation is realized by a change in the encoder’s local linear geometry.
+
+### 5.3 Predictive Entropy Spike and Its Alignment with the Jacobian
+
+The geometric results can also be examined through the lens of uncertainty. Because the world model is deterministic, we estimate the predictive entropy using a local Gaussian approximation to the one‑step residuals: $\sigma_t^2 \approx \mathrm{Var}_w(x_{t+1} - \hat{x}_{t+1})$ and $H_t \approx \frac12 \log(2\pi e\sigma_t^2)$. Figure 9a shows that the predictive entropy peaks near the same collision boundaries that produce the strongest Jacobian changes. In the bouncing‑ball environment, these peaks are expected because the next observation becomes locally harder to predict when the trajectory switches from free motion to post‑impact motion.
+
+The Jacobian norm, in turn, measures how sharply the latent representation changes with respect to the input; to make it comparable across different spatial locations, we expressed it as a z‑score. When both quantities are overlaid, the model exhibits a natural coupling: regions where the representation is highly sensitive (large Jacobian z‑score) are precisely the regions where the model acknowledges higher uncertainty. This synchronous variation is not engineered—it emerges from the same underlying predictive geometry, showing that the model implicitly encodes where its predictions are less reliable and concentrates its representational capacity near regime boundaries. The alignment therefore reinforces the interpretation that symbolic boundaries correspond to transitions between predictive regimes, where both sensitivity and uncertainty peak.
 
 ![Predictive entropy proxy and Jacobian norm](figures/entropy/fig9a_predictive_entropy_spike.png)
 **Figure 9a.** Predictive entropy proxy and Jacobian norm over time. Both curves are standardized for comparison, and their peaks tend to align near collision-induced regime changes.
 
-### 5.2 Segment Entropy
+### 5.4 Segment Entropy and Symbolic Compression
 
-Segment entropy measures how concentrated each symbolic cluster is in latent space. We estimate $H(Z \mid S = k)$ for every cluster with a diagonal Gaussian approximation on the latent vectors assigned to that cluster, then average them to obtain $H(Z \mid S)$. Lower within-cluster entropy means each symbolic state occupies a tighter region of the latent manifold, while the gap $H(Z) - H(Z \mid S)$ measures how much structure the segmentation explains.
+Segment entropy measures how concentrated each symbolic cluster is in latent space. We estimate $H(Z \mid S = k)$ for every cluster with a diagonal Gaussian approximation on the latent vectors assigned to that cluster, then average them to obtain $H(Z \mid S)$. Lower within‑cluster entropy means each symbolic state occupies a tighter region of the latent manifold, while the gap $H(Z) - H(Z \mid S)$ quantifies how much structure the segmentation captures.
 
 ![Segment internal entropy across symbolic clusters](figures/entropy/fig9b_segment_entropy.png)
 **Figure 9b.** Segment internal entropy in the clustered latent space. The global entropy line sits above the weighted conditional entropy when the partition captures meaningful latent structure.
 
-### 5.3 Mutual Information of Symbols
+### 5.5 Symbol Mutual Information
 
 The state machine exposes temporal dependence between symbolic states. We measure discrete mutual information between consecutive symbols, $I(S_t; S_{t+1})$, and also report normalized mutual information for scale comparison. Higher values indicate that the symbolic sequence retains predictive memory rather than behaving like a memoryless partition.
 
 ![Mutual information of consecutive symbols](figures/entropy/fig9c_symbol_mutual_information.png)
 **Figure 9c.** Mutual information summary for the symbolic state sequence. The discrete symbols retain nontrivial predictive dependence across adjacent time steps.
 
-### 5.4 Theoretical Lower Bound
+### 5.6 Theoretical Lower Bound
 
-The symbolic metrics above are conservative because clustering is a coarse-graining map, $S = q(Z)$. By the data processing inequality, the measured symbolic mutual information satisfies $I(S_t; S_{t+1}) \le I(Z_t; Z_{t+1})$, so the discrete FSM gives a lower bound on the predictive information present in the continuous latent trajectory. Equivalently, the entropy gap $H(Z) - H(Z \mid S)$ is the amount of latent structure captured by the symbol partition, while the predictive entropy proxy marks where that structure is hardest to forecast.
+The symbolic metrics above are conservative because clustering is a coarse‑graining map, $S = q(Z)$. By the data processing inequality, the measured symbolic mutual information satisfies $I(S_t; S_{t+1}) \le I(Z_t; Z_{t+1})$, so the discrete FSM gives a lower bound on the predictive information present in the continuous latent trajectory. Equivalently, the entropy gap $H(Z) - H(Z \mid S)$ is the amount of latent structure captured by the symbol partition, while the predictive entropy proxy marks where that structure is hardest to forecast. Together, the entropy spike, the segment‑entropy gap, and the symbolic mutual information provide a consistent lower‑bound view of the same regime transitions that appear geometrically in the latent manifold.
 
-Taken together, the entropy spike, the segment-entropy gap, and the symbolic mutual information provide a consistent lower-bound view of the same regime transitions that appear geometrically in the latent manifold.
+### 5.7 Temporal Structure as a Requirement for Emergence
 
----
+A plausible alternative explanation is that the observed boundaries are merely artifacts of the ReLU network’s piecewise‑linear nature, independent of the environment’s temporal structure. To test this, we keep the model, loss, and analysis settings fixed and only shuffle the 1D trajectory order (as described below). If boundaries were purely architectural, shuffling the temporal order should leave them intact.
 
-## 6. 2D Experiments
-
-### 6.1 GridWorld Setup
-To test whether the information-theoretic structure observed in 1D generalizes to spatial environments, we extend the world model to a 2D GridWorld.  
-The agent performs a random walk on a $10 \times 10$ grid with four actions (left, right, up, down).  
-States are normalized before training, so the same encoder, decoder, and analysis pipeline can be reused without modification.
-
-![2D GridWorld Trajectory](figures/gridworld/fig10_gridworld_states.png)
-Figure 10 shows a typical rollout, with boundary-contact states highlighted in red. (If a dedicated rollout figure exists, insert it here; otherwise, the following subfigures constitute the 2D analysis.)
-
----
-
-### 6.2 Jacobian and Predictive Entropy in 2D
-**Jacobian Norm (Fig. 10a).**  
-The Jacobian norm of the encoder with respect to the 2D input is computed to quantify local sensitivity.  
-The resulting spatial map shows strong Jacobian spikes near walls, corners, and doorways, indicating sharp changes in local dynamics.  
-These spikes correspond to dynamical boundaries in the environment.
-
-![Jacobian norm map in the 2D GridWorld](figures/gridworld/fig10a_jacobian_norm_2d.png)
-**Figure 10a.** Jacobian norm map in the 2D GridWorld. Spikes appear near walls, corners, and doorways, marking dynamical boundaries.
-
-**Predictive Entropy (Fig. 10b).**  
-Predictive entropy is computed using a residual-based Gaussian approximation.  
-Entropy is low inside rooms and corridors, where transitions are stable, but high near boundaries, where motion becomes constrained.  
-The alignment between Jacobian spikes and entropy spikes demonstrates that dynamical boundaries coincide with information boundaries.
-
-![Predictive entropy map in the 2D GridWorld](figures/gridworld/fig10b_predictive_entropy_2d.png)
-**Figure 10b.** Predictive entropy map in the 2D GridWorld. Entropy is low inside rooms and corridors, high near boundaries.
-
----
-
-### 6.3 Symbolic Clusters in 2D
-**Latent Clustering (Fig. 10c).**  
-Clustering the latent states yields distinct spatial regions corresponding to rooms, corridors, and corner zones.  
-These clusters represent minimal-uncertainty symbolic regions, extending the 1D notion of segments into 2D spatial geometry.
-
-![Symbolic clusters in the 2D latent space](figures/gridworld/fig10c_symbolic_clusters_2d.png)
-**Figure 10c.** Symbolic clusters in the 2D latent space. Each cluster corresponds to a coherent spatial region (room interior, corridor, corner zone).
-
----
-
-### 6.4 Symbol Mutual Information
-**Symbol MI Matrix (Fig. 10d).**  
-Mutual information between successive symbolic states is computed to reveal predictive dependencies.  
-Adjacent spatial regions exhibit high MI, while distant or disconnected regions show low MI.  
-This produces a symbolic adjacency structure that mirrors the topology of the environment.
-
-![Symbol mutual information matrix](figures/gridworld/fig10d_symbol_mi_matrix_2d.png)
-**Figure 10d.** Symbol mutual information matrix. High mutual information between adjacent symbolic regions mirrors the spatial topology of the environment.
-
----
-
-### 6.5 Summary
-Across Jacobian, entropy, clustering, and MI analyses, the 2D results show a consistent pattern:
-
-1. **Boundaries** (walls, corners, doorways) → Jacobian spikes + entropy spikes  
-2. **Regions** (rooms, corridors) → stable low‑entropy clusters  
-3. **Adjacency** → high MI between neighboring symbolic regions
-
-Together, these results demonstrate that symbolic boundaries in world models emerge from changes in predictive structure, and that this mechanism generalizes naturally from 1D to 2D environments.  
-These findings provide a spatial extension of the predictive‑geometry mechanism discussed in Section 8.
-
----
-
-## 7. Randomization Control
-
-To test whether symbol emergence depends on meaningful trajectory structure, we keep the model, loss, PCA, entropy, and clustering settings fixed and only shuffle the 1D trajectory order.
-
-### 7.1 Original vs 100% Shuffled Trajectory        
-
-The original trajectory preserves collision-driven temporal structure, so the latent PCA often separates into stable cluster-like regions. When the same states are fully shuffled, the temporal ordering is destroyed and the latent organization becomes much less coherent. The comparison below shows the two cases side by side.
+**Original vs. 100% shuffled trajectory.** The original trajectory preserves collision‑driven temporal structure, so the latent PCA often separates into stable cluster‑like regions. When the same states are fully shuffled, the temporal ordering is destroyed and the latent organization becomes much less coherent (Figure 11).
 
 ![Original trajectory versus 100% shuffled trajectory in latent PCA space](figures/randomization/original_vs_100_shuffled_pca.png)
 **Figure 11.** Original trajectory versus 100% shuffled trajectory in latent PCA space. The original case shows clearer cluster structure, while the shuffled case becomes more mixed and fragmented.
 
-### 7.2 Shuffle Ratio Trend
+**Shuffle ratio sweep.** To quantify the effect, we sweep shuffle ratios of 0%, 20%, and 100% and record prediction error, entropy, Jacobian norm, and symbol mutual information. As shown in Figure 12 and Table 1, all metrics degrade monotonically: prediction MSE and entropy rise, while Jacobian norm and mutual information drop.
 
-To quantify the effect of progressive temporal degradation, we sweep shuffle ratios of 0%, 20%, and 100% and record how prediction error, entropy, Jacobian norm, and symbol mutual information change as trajectory order is degraded. If symbol emergence depends on meaningful temporal structure, the metrics should deteriorate as the shuffle ratio increases.
+**Table 1.** Metric trends across shuffle ratios. (Negative entropy values arise from the continuous nature of differential entropy when the residual variance is very small; the important quantity is the relative change, not the absolute sign.)
 
 | Metric | ratio = 0% | ratio = 20% | ratio = 100% | Trend |
 | --- | --- | --- | --- | --- |
@@ -250,35 +201,13 @@ To quantify the effect of progressive temporal degradation, we sweep shuffle rat
 ![Randomization metric trends](figures/randomization/randomization_metric_trends.png)
 **Figure 12.** Metric trends across shuffle ratios. As trajectory order is increasingly randomized, prediction MSE and entropy rise monotonically, while Jacobian norm and adjacent symbol mutual information decline.
 
-### 7.3 Interpretation
+**Interpretation.** As temporal coherence is progressively destroyed, the predictive error and uncertainty increase, and the symbolic transition structure disintegrates. This counterfactual outcome indicates that the geometric segmentation is not a fixed property of the network architecture, but relies on the presence of a learnable predictive structure in the environment. It strengthens the claim that the boundaries observed in Section 5.2 arise from the interplay of temporal dynamics and predictive learning, not from network architecture alone. In other words, symbol emergence in world models is driven by the predictability of the environment’s dynamics rather than by static correlations.
 
-As the shuffle ratio increases, predictive performance deteriorates and mutual information between adjacent symbols decreases. This suggests that the emergent symbols are not merely memorized statistical patterns, but are intrinsically related to temporal organization in the observed trajectories. Without temporal coherence, the symbolic state machine structure disintegrates entirely, confirming that symbol emergence in world models is driven by the predictability of the environment's dynamics rather than static correlations.
-
-
----
-## 8. Discussion
-
-### 8.1 Predictive Latent Geometry
-
-The PCA results suggest that the learned latent trajectory does not form an unstructured cloud, but lies on a low‑dimensional manifold with piecewise‑smooth geometry. In the bouncing‑ball environment, free motion, boundary approach, and post‑collision motion correspond to different predictive situations. The world model compresses these situations into a representation that supports forecasting, and that compression organizes the latent space into connected regions with directional changes rather than a single globally smooth curve. This geometry suggests that predictive dynamics not only produce a compact representation, but also induce structure in that representation. A piecewise‑smooth manifold thus becomes a natural substrate for symbol emergence: discrete symbolic categories can be defined as stable partitions of a continuous predictive manifold.
-
-### 8.2 Mechanism of Symbolic Boundaries
-
-The local mechanism behind these boundaries is the switching of ReLU activation patterns in the encoder. Because the encoder is piecewise linear, each change in activation pattern induces a new local linearization, which appears in the Jacobian as a jump or sharp change. The Jacobian therefore marks transitions between predictive regimes. When the system approaches a collision, the model must switch prediction strategies, and that regime switching is reflected as a discontinuity in sensitivity to the input. At the mechanistic level, a predictive regime is a mode of representation in the model. The correspondence between regime switching and Jacobian discontinuity provides evidence that symbolic boundaries may arise from internal predictive dynamics rather than being externally imposed. The boundary is “symbolic” because it separates distinct predictive organizations, and it is mechanistic because the separation is realized by a change in the encoder’s local linear geometry.
-
-### 8.3 Temporal Structure as a Requirement for Emergence
-
-A plausible alternative explanation is that the observed boundaries are merely artifacts of the ReLU network’s piecewise‑linear nature, independent of the environment’s temporal structure. The randomization control experiment (Section 7) tests this directly: if boundaries were purely architectural, shuffling the temporal order of the trajectory should leave them intact. Instead, as temporal coherence is progressively destroyed, the predictive error and entropy rise while the Jacobian norm and the mutual information between symbolic states drop. The symbolic transition structure disintegrates. This counterfactual outcome indicates that the geometric segmentation is not a fixed property of the network, but relies on the presence of a learnable predictive structure in the environment. It strengthens the claim that the boundaries observed in Section 8.2 arise from the interplay of temporal dynamics and predictive learning, not from network architecture alone.
-
-### 8.4 Interpretation of Predictive Entropy and Its Alignment with the Jacobian
-
-The predictive entropy was computed by first estimating the variance of the one‑step residual (predicted minus actual next state) within a sliding window. Because only second‑order statistics are reliably available from finite samples, we adopted a maximum‑entropy principle and modeled the residual as Gaussian. Under this assumption, the differential entropy per dimension reduces to $\frac{1}{2}\log(2\pi e\,\sigma^2)$, providing a direct summary of the model’s local predictive uncertainty. The Jacobian norm, in turn, measures how sharply the latent representation changes with respect to the input; to make it comparable across different spatial locations, we expressed it as a z‑score relative to its own mean and standard deviation across the environment. When both quantities are overlaid, the model exhibits a natural coupling: regions where the representation is highly sensitive to the input (large Jacobian z‑score) are precisely the regions where the model acknowledges higher uncertainty (elevated entropy). This synchronous variation is not engineered—it emerges from the same underlying predictive geometry, showing that the model implicitly encodes where its predictions are unreliable and allocates representation sensitivity accordingly. The alignment therefore reinforces the interpretation that symbolic boundaries correspond to transitions between predictive regimes, where both sensitivity and uncertainty peak.
-
-### 8.5 From Manifold to Discrete Symbols
+### 5.8 From Manifold to Discrete Symbols
 
 Once the latent geometry is segmented, k‑means discretizes the continuous manifold into a finite set of clusters. Each cluster can be interpreted as a symbolic state—not a ground‑truth label, but a stable region of the predictive latent space. The transition structure among these clusters yields a state‑transition graph that captures how the representation moves from one predictive regime to another over time. This construction shows how symbol‑like categories can emerge from geometry without explicit supervision. The clustering step turns a smooth predictive manifold into a finite symbolic alphabet, and the state‑transition graph turns that alphabet into structured dynamics while preserving temporal order.
 
-### 8.6 Model‑Independent Structure
+### 5.9 Model‑Independent Structure
 
 The comparison across MLP, flow, and diffusion models tests whether the observed segmentation is architecture‑specific or environment‑driven. The flow model, being invertible, can reshape the manifold but cannot merge distinct regions or create new boundaries; topology is preserved. Consequently, flow latent segmentation aligns with the MLP segmentation, and Procrustes comparison confirms near‑identical geometry. The flow Jacobian time series further shows that the same event‑related changes survive the invertible mapping.
 
@@ -286,10 +215,72 @@ Diffusion provides complementary evidence. Although the reverse process is stoch
 
 Because both flow and diffusion models reproduce similar geometric bends, the segmentation appears driven by the environment’s predictive structure rather than by architectural details. Taken together, these results support a unified explanation: predictive regimes impose latent geometry, geometry induces segmentation, and segmentation gives rise to symbolic boundaries. This chain does not depend on a particular architecture—it appears across deterministic, invertible, and stochastic models because all must represent the same environment‑induced structure. The architectural differences change how the structure is expressed, but not whether it appears.
 
-### 8.7 Toward Social Symbol Emergence
+### 5.10 Toward Social Symbol Emergence
 
 While this study focuses on a single predictive agent, the resulting structure suggests a natural path toward multi‑agent symbol systems. If symbolic boundaries reflect predictive regimes, then agents in the same environment may develop partially aligned segmentation patterns that can be negotiated or stabilized through communication. A multi‑agent extension would allow us to examine how individually formed symbolic states become coordinated through interaction and how shared categories emerge from the need to predict each other’s behavior. This perspective is consistent with the broader account of symbol emergence in which social interaction transforms individual predictive structures into communal symbol systems.
 
+---
+
+## 6. 2D Experiments
+
+### 6.1 GridWorld Setup
+To test whether the information-theoretic structure observed in 1D generalizes to spatial environments, we extend the world model to a 2D GridWorld.  
+The agent performs a random walk on a $10 \times 10$ grid with four actions (left, right, up, down).  
+States are normalized before training, so the same encoder, decoder, and analysis pipeline can be reused without modification.
+
+![2D GridWorld rollout](figures/gridworld/fig10_gridworld_states.png)
+**Figure 10.** A typical 2D rollout, with boundary-contact states highlighted in red.
+
+### 6.2 Jacobian and Predictive Entropy in 2D
+**Jacobian Norm (Fig. 10a).**  
+The Jacobian norm of the encoder with respect to the 2D input is computed to quantify local sensitivity.  
+The resulting spatial map shows strong Jacobian spikes near walls, corners, and doorways, indicating sharp changes in local dynamics.  
+These spikes correspond to dynamical boundaries in the environment.
+
+![Jacobian norm map in the 2D GridWorld](figures/gridworld/fig10a_jacobian_norm_2d.png)
+**Figure 10a.** Jacobian norm map in the 2D GridWorld. Spikes appear near walls, corners, and doorways, marking dynamical boundaries.
+
+**Predictive Entropy (Fig. 10b).**  
+Predictive entropy is computed using a residual-based Gaussian approximation.  
+Entropy is low inside rooms and corridors, where transitions are stable, but high near boundaries, where motion becomes constrained.  
+The alignment between Jacobian spikes and entropy spikes demonstrates that dynamical boundaries coincide with information boundaries.
+
+![Predictive entropy map in the 2D GridWorld](figures/gridworld/fig10b_predictive_entropy_2d.png)
+**Figure 10b.** Predictive entropy map in the 2D GridWorld. Entropy is low inside rooms and corridors, high near boundaries.
+
+### 6.3 Symbolic Clusters in 2D
+**Latent Clustering (Fig. 10c).**  
+Clustering the latent states yields distinct spatial regions corresponding to rooms, corridors, and corner zones.  
+These clusters represent minimal-uncertainty symbolic regions, extending the 1D notion of segments into 2D spatial geometry.
+
+![Symbolic clusters in the 2D latent space](figures/gridworld/fig10c_symbolic_clusters_2d.png)
+**Figure 10c.** Symbolic clusters in the 2D latent space. Each cluster corresponds to a coherent spatial region (room interior, corridor, corner zone).
+
+### 6.4 Symbol Mutual Information
+**Symbol MI Matrix (Fig. 10d).**  
+Mutual information between successive symbolic states is computed to reveal predictive dependencies.  
+Adjacent spatial regions exhibit high MI, while distant or disconnected regions show low MI.  
+This produces a symbolic adjacency structure that mirrors the topology of the environment.
+
+![Symbol mutual information matrix](figures/gridworld/fig10d_symbol_mi_matrix_2d.png)
+**Figure 10d.** Symbol mutual information matrix. High mutual information between adjacent symbolic regions mirrors the spatial topology of the environment.
+
+### 6.5 Summary
+Across Jacobian, entropy, clustering, and MI analyses, the 2D results show a consistent pattern:
+
+1. **Boundaries** (walls, corners, doorways) → Jacobian spikes + entropy spikes  
+2. **Regions** (rooms, corridors) → stable low‑entropy clusters  
+3. **Adjacency** → high MI between neighboring symbolic regions
+
+Together, these results demonstrate that symbolic boundaries in world models emerge from changes in predictive structure, and that this mechanism generalizes naturally from 1D to 2D environments.
+
+---
+
+## 7. Conclusion
+
+This work provided a mechanistic account of how discrete symbols can emerge from the continuous predictive dynamics of a world model. Across 1D and 2D environments, we found that predictive regimes shape the latent manifold into piecewise‑smooth regions, that encoder Jacobian discontinuities mark transitions between these regimes, and that clustering the latent space yields a symbolic segmentation whose transition graph mirrors the environment’s topology. The randomization control confirmed that temporal predictive structure, rather than architectural artifacts, is necessary for this organization. The same boundaries appear in MLP, flow, and diffusion models, indicating that the phenomenon is model‑independent. These findings establish a foundation for studying how individually formed symbols might become shared through social interaction in multi‑agent systems.
+
+---
 
 ## Appendix
 
